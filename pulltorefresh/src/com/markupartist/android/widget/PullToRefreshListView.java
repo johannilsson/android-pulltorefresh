@@ -29,6 +29,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private int mCurrentScrollState;
     private int mRefreshViewHeight;
     private int mPullBounce;
+    private boolean mRefreshing;
 
     public PullToRefreshListView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -62,7 +63,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                     //final int top = mRefreshView.getTop();
                     final int top = getFirstVisiblePosition();
                     Log.d(TAG, "top: " + getFirstVisiblePosition());
-                    if (top == 0/* || top >= -30*/) {
+                    if (top == 0 && !mRefreshing/* || top >= -30*/) {
                         //Log.d(TAG, "Should refresh?");
                         onRefresh();
                         //return true;
@@ -113,17 +114,21 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         final int top = mRefreshView.getTop();
         if (top < -30) {
             Log.d(TAG, "Backing off refresh...");
+            smoothScrollBy(100 + top, 1000);
             return;
         }
-        
+
         invalidate();
-        smoothScrollBy(mPullBounce, 500);
+        smoothScrollBy(mRefreshView.getTop() + mPullBounce, 500);
         //scrollBy(0, mPullBounce);
+
+        mRefreshing = true;
 
         Animation rotateAnimation =
             AnimationUtils.loadAnimation(getContext(),
                     R.anim.pull_to_refresh_anim);
         rotateAnimation.setRepeatMode(Animation.INFINITE);
+        rotateAnimation.setRepeatCount(Animation.INFINITE);
 
         final TextView text = (TextView) mRefreshView.findViewById(R.id.pull_to_refresh_text);
         final ImageView staticSpinner = (ImageView) mRefreshView.findViewById(R.id.pull_to_refresh_static_spinner);
@@ -132,7 +137,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         staticSpinner.startAnimation(rotateAnimation);
 
         // TODO: Temporary, to fake some network work or similar. Replace with callback.
-        new CountDownTimer(2000, 1000) {
+        new CountDownTimer(4000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
             }
@@ -160,5 +165,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             smoothScrollBy(scrollDistance, 1000);
             //scrollBy(0, scrollDistance);
         }
+        mRefreshing = false;
     }
 }
