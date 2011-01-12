@@ -20,4 +20,5 @@
     android:toYScale="0.0" 
     android:pivotX="50%" 
     android:pivotY="50%"
-    android:duration="1000" />
+    android:duration="1000"
+    android:interpolator="@android:anim/linear_interpolator"/>

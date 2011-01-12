@@ -114,7 +114,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         final int top = mRefreshView.getTop();
         if (top < -30) {
             Log.d(TAG, "Backing off refresh...");
-            smoothScrollBy(100 + top, 1000);
+            smoothScrollBy(mRefreshViewHeight + top, 1000);
             return;
         }
 
@@ -127,7 +127,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         Animation rotateAnimation =
             AnimationUtils.loadAnimation(getContext(),
                     R.anim.pull_to_refresh_anim);
-        rotateAnimation.setRepeatMode(Animation.INFINITE);
         rotateAnimation.setRepeatCount(Animation.INFINITE);
 
         final TextView text = (TextView) mRefreshView.findViewById(R.id.pull_to_refresh_text);
