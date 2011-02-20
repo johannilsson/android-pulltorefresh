@@ -15,6 +15,11 @@ This project aims to provide a reusable pull to refresh widget for Android.
         android:layout_width="fill_parent"
         />
 
+## Contributors
+
+* Jason Knight <http://www.synthable.com/>
+* Eddie Ringle <http://eddieringle.com/>
+
 ## License
 Copyright (c) 2011 [Johan Nilsson](http://markupartist.com)
 
