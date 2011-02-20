@@ -4,7 +4,6 @@ package com.markupartist.android.widget;
 import com.markupartist.android.widget.pulltorefresh.R;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.CountDownTimer;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -13,7 +12,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,25 +23,49 @@ import android.widget.AbsListView.OnScrollListener;
 
 public class PullToRefreshListView extends ListView implements OnScrollListener {
 
+    private static final int PULL_TO_REFRESH = 1;
+    private static final int RELEASE_TO_REFRESH = 2;
+    private static final int REFRESHING = 4;
+
     private static final String TAG = "PullToRefreshListView";
     private LayoutInflater mInflater;
     private LinearLayout mRefreshView;
     private int mCurrentScrollState;
     private int mRefreshViewHeight;
-    private int mPullBounce;
-    private boolean mRefreshing;
+    private TextView mRefreshViewText;
+    private ImageView mRefreshViewImage;
+    private int mRefreshState;
+
+    private RotateAnimation mFlipAnimation;
+    private RotateAnimation mReverseFlipAnimation;
+    private RotateAnimation mRotateAnimation;
 
     public PullToRefreshListView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        final Resources res = context.getResources();
-        mPullBounce = res.getDimensionPixelSize(R.dimen.pull_to_refresh_bounce);
+        /* Load all of the animations we need in code rather than through XML */
+        mFlipAnimation = new RotateAnimation(0, 180, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+        mFlipAnimation.setInterpolator(new LinearInterpolator());
+        mFlipAnimation.setDuration(250);
+        mFlipAnimation.setFillAfter(true);
+        mReverseFlipAnimation = new RotateAnimation(180, 360, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+        mReverseFlipAnimation.setInterpolator(new LinearInterpolator());
+        mReverseFlipAnimation.setDuration(250);
+        mReverseFlipAnimation.setFillAfter(true);
+        mRotateAnimation = new RotateAnimation(0, 360, RotateAnimation.RELATIVE_TO_SELF, 0.5f, RotateAnimation.RELATIVE_TO_SELF, 0.5f);
+        mRotateAnimation.setInterpolator(new LinearInterpolator());
+        mRotateAnimation.setDuration(1000);
+        mRotateAnimation.setRepeatCount(Animation.INFINITE);
 
         mInflater = (LayoutInflater) context.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
 
         mRefreshView = (LinearLayout) mInflater.inflate(
                 R.layout.pull_to_refresh_header, null);
+
+        mRefreshViewText = (TextView) mRefreshView.findViewById(R.id.pull_to_refresh_text);
+        mRefreshViewImage = (ImageView) mRefreshView.findViewById(R.id.pull_to_refresh_image);
+        mRefreshState = PULL_TO_REFRESH;
 
         addHeaderView(mRefreshView);
 
@@ -50,28 +74,26 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         measureView(mRefreshView);
         mRefreshViewHeight = mRefreshView.getMeasuredHeight();
 
+        // TODO: Implement smooth scrolling for pre-Froyo devices
         smoothScrollBy(mRefreshViewHeight, 0);
-        //scrollBy(0, mRefreshViewHeight);
+    }
 
-        setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                case MotionEvent.ACTION_UP:
-                    //Log.d(TAG, "BLA: " + getFirstVisiblePosition());
-
-                    //final int top = mRefreshView.getTop();
-                    final int top = getFirstVisiblePosition();
-                    Log.d(TAG, "top: " + getFirstVisiblePosition());
-                    if (top == 0 && !mRefreshing/* || top >= -30*/) {
-                        //Log.d(TAG, "Should refresh?");
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_UP:
+                if (getFirstVisiblePosition() == 0 && mRefreshState != REFRESHING) {
+                    if (mRefreshView.getTop() == 0) {
+                        /* Initiate the refresh */
+                        mRefreshState = REFRESHING;
+                        prepareForRefresh();
                         onRefresh();
-                        //return true;
+                    } else if (mRefreshView.getBottom() > 0) {
+                        /* Abort refresh and scroll down below the refresh view */
+                        smoothScrollBy(mRefreshView.getBottom(), 750);
                     }
                 }
-                return false;
-            }
-        });
+        }
+        return super.onTouchEvent(event);
     }
 
     private void measureView(View child) {
@@ -97,9 +119,34 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem,
             int visibleItemCount, int totalItemCount) {
-        if (firstVisibleItem == 0 && mCurrentScrollState == SCROLL_STATE_FLING) {
-            smoothScrollBy(mRefreshViewHeight, 1000);
-            //scrollBy(0, mRefreshViewHeight);
+        /*
+         * Twitter-like Pull to Refresh functionality
+         *
+         * When the refresh view is completely visible (top == 0), change the text
+         * to say "Release to refresh..." and flip the arrow drawable. This mimics
+         * the Twitter app's functionality and looks pretty neat.
+         */
+        if (mCurrentScrollState == SCROLL_STATE_TOUCH_SCROLL && mRefreshState != REFRESHING) {
+            if (firstVisibleItem == 0) {
+                if (mRefreshView.getTop() >= 0 && mRefreshState != RELEASE_TO_REFRESH) {
+                    mRefreshState = RELEASE_TO_REFRESH;
+                    mRefreshViewText.setText(R.string.pull_to_refresh_release_label);
+                    mRefreshViewImage.clearAnimation();
+                    mRefreshViewImage.startAnimation(mFlipAnimation);
+                } else if (mRefreshView.getBottom() < mRefreshViewHeight && mRefreshState != PULL_TO_REFRESH) {
+                    mRefreshState = PULL_TO_REFRESH;
+                    mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
+                    mRefreshViewImage.clearAnimation();
+                    mRefreshViewImage.startAnimation(mReverseFlipAnimation);
+                }
+            } else {
+                if (mRefreshState != PULL_TO_REFRESH) {
+                    mRefreshState = PULL_TO_REFRESH;
+                    mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
+                    mRefreshViewImage.clearAnimation();
+                    mRefreshViewImage.startAnimation(mReverseFlipAnimation);
+                }
+            }
         }
     }
 
@@ -108,32 +155,18 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         mCurrentScrollState = scrollState;
     }
 
+    public void prepareForRefresh() {
+        /* Replace arrow with refresh drawable */
+        mRefreshViewImage.setImageResource(R.drawable.ic_refresh_default);
+        /* Clear any animations in the drawable and start the full rotation animation */
+        mRefreshViewImage.clearAnimation();
+        mRefreshViewImage.startAnimation(mRotateAnimation);
+        /* Set refresh view text to the refreshing label */
+        mRefreshViewText.setText(R.string.pull_to_refresh_refreshing_label);
+    }
+
     public void onRefresh() {
         Log.d(TAG, "onRefresh");
-
-        final int top = mRefreshView.getTop();
-        if (top < -30) {
-            Log.d(TAG, "Backing off refresh...");
-            smoothScrollBy(mRefreshViewHeight + top, 1000);
-            return;
-        }
-
-        invalidate();
-        smoothScrollBy(mRefreshView.getTop() + mPullBounce, 500);
-        //scrollBy(0, mPullBounce);
-
-        mRefreshing = true;
-
-        Animation rotateAnimation =
-            AnimationUtils.loadAnimation(getContext(),
-                    R.anim.pull_to_refresh_anim);
-        rotateAnimation.setRepeatCount(Animation.INFINITE);
-
-        final TextView text = (TextView) mRefreshView.findViewById(R.id.pull_to_refresh_text);
-        final ImageView staticSpinner = (ImageView) mRefreshView.findViewById(R.id.pull_to_refresh_static_spinner);
-
-        text.setText(getContext().getText(R.string.pull_to_refresh_loading_label));
-        staticSpinner.startAnimation(rotateAnimation);
 
         // TODO: Temporary, to fake some network work or similar. Replace with callback.
         new CountDownTimer(4000, 1000) {
@@ -149,21 +182,21 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
     public void onRefreshComplete() {        
         Log.d(TAG, "onRefreshComplete");
-        final TextView text = (TextView) mRefreshView.findViewById(R.id.pull_to_refresh_text);
-        final ImageView staticSpinner = (ImageView) mRefreshView.findViewById(R.id.pull_to_refresh_static_spinner);
 
-        text.setText(getContext().getText(R.string.pull_to_refresh_label));
-        staticSpinner.setAnimation(null);
+        /* Set refresh view text to the pull label */
+        mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
+        /* Replace refresh drawable with arrow drawable */
+        mRefreshViewImage.setImageResource(R.drawable.ic_pull_arrow);
+        /* Clear the full rotation animation */
+        mRefreshViewImage.clearAnimation();
 
-        final int top = mRefreshView.getTop();
-        Log.d(TAG, "Refresh top: " + top);
-        if (top == 0 || top >= -mPullBounce) {
+        /* If refresh view is visible when loading completes, smoothly scroll down to next item */
+        if (mRefreshView.getBottom() > 0) {
             invalidateViews();
-            //invalidate();
-            int scrollDistance = mRefreshViewHeight - mPullBounce;
-            smoothScrollBy(scrollDistance, 1000);
-            //scrollBy(0, scrollDistance);
+            smoothScrollBy(mRefreshView.getBottom() + 15, 750);
         }
-        mRefreshing = false;
+
+        /* Reset refresh state */
+        mRefreshState = PULL_TO_REFRESH;
     }
 }
