@@ -19,7 +19,8 @@
     android:layout_height="fill_parent"
     android:paddingTop="20dip"
     android:paddingBottom="20dip"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:background="@drawable/pull_to_refresh_header_background">
     <ImageView
         android:id="@+id/pull_to_refresh_image"
         android:layout_width="wrap_content"
