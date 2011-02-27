@@ -185,7 +185,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
     public void prepareForRefresh() {
         /* Replace arrow with refresh drawable */
-        mRefreshViewImage.setImageResource(R.drawable.ic_refresh_default);
+        mRefreshViewImage.setImageResource(R.drawable.ic_refresh);
         /* Clear any animations in the drawable and start the full rotation animation */
         mRefreshViewImage.clearAnimation();
         mRefreshViewImage.startAnimation(mRotateAnimation);
