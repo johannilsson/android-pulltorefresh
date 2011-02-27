@@ -1,7 +1,8 @@
 package com.markupartist.android.widget;
 
 
-import com.markupartist.android.widget.pulltorefresh.R;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import android.content.Context;
 import android.os.CountDownTimer;
@@ -20,6 +21,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AbsListView.OnScrollListener;
+
+import com.markupartist.android.widget.pulltorefresh.R;
 
 public class PullToRefreshListView extends ListView implements OnScrollListener {
 
@@ -74,8 +77,33 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         measureView(mRefreshView);
         mRefreshViewHeight = mRefreshView.getMeasuredHeight();
 
-        // TODO: Implement smooth scrolling for pre-Froyo devices
-        smoothScrollBy(mRefreshViewHeight, 0);
+        scrollListTo(mRefreshViewHeight, 0);
+    }
+
+    /**
+     * Smoothly scroll by distance pixels over duration milliseconds.
+     * 
+     * <p>Using reflection internally to call smoothScrollBy for API Level 8
+     * otherwise scrollBy is called.
+     * 
+     * @param distance Distance to scroll in pixels.
+     * @param duration Duration of the scroll animation in milliseconds.
+     */
+    private void scrollListTo(int distance, int duration) {
+        try {
+            Method method = ListView.class.getMethod("smoothScrollBy",
+                    Integer.TYPE, Integer.TYPE);
+            method.invoke(this, distance, duration);
+        } catch (NoSuchMethodException e) {
+            // TODO: Implement smooth scrolling for pre-Froyo devices
+            scrollBy(0, distance);
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (IllegalAccessException e) {
+            System.err.println("unexpected " + e);
+        } catch (InvocationTargetException e) {
+            System.err.println("unexpected " + e);
+        }
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -89,7 +117,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                         onRefresh();
                     } else if (mRefreshView.getBottom() > 0) {
                         /* Abort refresh and scroll down below the refresh view */
-                        smoothScrollBy(mRefreshView.getBottom(), 750);
+                        scrollListTo(mRefreshView.getBottom(), 750);
                     }
                 }
         }
@@ -193,10 +221,11 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         /* If refresh view is visible when loading completes, smoothly scroll down to next item */
         if (mRefreshView.getBottom() > 0) {
             invalidateViews();
-            smoothScrollBy(mRefreshView.getBottom() + 15, 750);
+            scrollListTo(mRefreshView.getBottom() + 15, 750);
         }
 
         /* Reset refresh state */
         mRefreshState = PULL_TO_REFRESH;
     }
+
 }
