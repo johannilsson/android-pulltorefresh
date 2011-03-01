@@ -42,6 +42,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private RotateAnimation mFlipAnimation;
     private RotateAnimation mReverseFlipAnimation;
     private RotateAnimation mRotateAnimation;
+    private int mRefreshOriginalTopPadding;
 
     public PullToRefreshListView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -68,6 +69,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
         mRefreshViewText = (TextView) mRefreshView.findViewById(R.id.pull_to_refresh_text);
         mRefreshViewImage = (ImageView) mRefreshView.findViewById(R.id.pull_to_refresh_image);
+        mRefreshOriginalTopPadding = mRefreshView.getPaddingTop();
+
         mRefreshState = PULL_TO_REFRESH;
 
         addHeaderView(mRefreshView);
@@ -110,20 +113,50 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
                 if (getFirstVisiblePosition() == 0 && mRefreshState != REFRESHING) {
-                    if (mRefreshView.getTop() == 0) {
+                    if (mRefreshView.getPaddingTop() > mRefreshOriginalTopPadding
+                            || mRefreshView.getTop() >= 0) {
                         /* Initiate the refresh */
                         mRefreshState = REFRESHING;
                         prepareForRefresh();
                         onRefresh();
-                    } else if (mRefreshView.getBottom() > 0) {
+                    } else if (mRefreshView.getBottom() < mRefreshViewHeight) {
                         /* Abort refresh and scroll down below the refresh view */
-                        scrollListTo(mRefreshView.getBottom(), 750);
+                        mRefreshView.setPadding(
+                                mRefreshView.getPaddingLeft(),
+                                mRefreshOriginalTopPadding,
+                                mRefreshView.getPaddingRight(),
+                                mRefreshView.getPaddingBottom());
+
+                        scrollListTo(mRefreshViewHeight, 750);
                     }
                 }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                applyHeaderPadding(event);
+                break;
         }
+        
         return super.onTouchEvent(event);
     }
 
+    void applyHeaderPadding(MotionEvent ev) {
+        final int historySize = ev.getHistorySize();
+        final int pointerCount = ev.getPointerCount();
+        for (int h = 0; h < historySize; h++) {
+            for (int p = 0; p < pointerCount; p++) {
+                if (mRefreshState == RELEASE_TO_REFRESH) {
+                    int topPadding =
+                        (int) ev.getHistoricalY(p, h) - mRefreshViewHeight;
+                    mRefreshView.setPadding(
+                            mRefreshView.getPaddingLeft(),
+                            topPadding,
+                            mRefreshView.getPaddingRight(),
+                            mRefreshView.getPaddingBottom());
+                }
+            }
+        }
+    }
+    
     private void measureView(View child) {
         ViewGroup.LayoutParams p = child.getLayoutParams();
         if (p == null) {
@@ -155,8 +188,12 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
          * the Twitter app's functionality and looks pretty neat.
          */
         if (mCurrentScrollState == SCROLL_STATE_TOUCH_SCROLL && mRefreshState != REFRESHING) {
+            Log.d(TAG, "top=" + mRefreshView.getTop());
+
             if (firstVisibleItem == 0) {
-                if (mRefreshView.getTop() >= 0 && mRefreshState != RELEASE_TO_REFRESH) {
+                if ((mRefreshView.getPaddingTop() > mRefreshOriginalTopPadding
+                        || mRefreshView.getTop() >= 0)
+                        && mRefreshState != RELEASE_TO_REFRESH) {
                     mRefreshState = RELEASE_TO_REFRESH;
                     mRefreshViewText.setText(R.string.pull_to_refresh_release_label);
                     mRefreshViewImage.clearAnimation();
@@ -184,6 +221,12 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     }
 
     public void prepareForRefresh() {
+        mRefreshView.setPadding(
+                mRefreshView.getPaddingLeft(),
+                mRefreshOriginalTopPadding,
+                mRefreshView.getPaddingRight(),
+                mRefreshView.getPaddingBottom());
+
         /* Replace arrow with refresh drawable */
         mRefreshViewImage.setImageResource(R.drawable.ic_refresh);
         /* Clear any animations in the drawable and start the full rotation animation */
@@ -210,6 +253,12 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
     public void onRefreshComplete() {        
         Log.d(TAG, "onRefreshComplete");
+
+        mRefreshView.setPadding(
+                mRefreshView.getPaddingLeft(),
+                mRefreshOriginalTopPadding,
+                mRefreshView.getPaddingRight(),
+                mRefreshView.getPaddingBottom());
 
         /* Set refresh view text to the pull label */
         mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
