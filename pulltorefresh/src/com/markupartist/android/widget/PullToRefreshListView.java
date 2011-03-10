@@ -146,7 +146,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             for (int p = 0; p < pointerCount; p++) {
                 if (mRefreshState == RELEASE_TO_REFRESH) {
                     int topPadding =
-                        (int) ev.getHistoricalY(p, h) - mRefreshViewHeight;
+                        (int) (ev.getHistoricalY(p, h) / 2) - mRefreshViewHeight;
                     mRefreshView.setPadding(
                             mRefreshView.getPaddingLeft(),
                             topPadding,
@@ -199,12 +199,16 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                     mRefreshViewImage.clearAnimation();
                     mRefreshViewImage.startAnimation(mFlipAnimation);
                 } else if (mRefreshView.getBottom() < mRefreshViewHeight && mRefreshState != PULL_TO_REFRESH) {
+                    Log.d(TAG, "Setting PULL_TO_REFRESH");
                     mRefreshState = PULL_TO_REFRESH;
                     mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
                     mRefreshViewImage.clearAnimation();
                     mRefreshViewImage.startAnimation(mReverseFlipAnimation);
                 }
+                Log.d(TAG, "mRefreshView.getBottom()=" + mRefreshView.getBottom());
+                Log.d(TAG, "mRefreshView.getPaddingTop()=" + mRefreshView.getPaddingTop());
             } else {
+                Log.d(TAG, "ELSE");
                 if (mRefreshState != PULL_TO_REFRESH) {
                     mRefreshState = PULL_TO_REFRESH;
                     mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
