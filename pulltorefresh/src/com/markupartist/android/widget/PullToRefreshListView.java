@@ -187,7 +187,9 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
          * to say "Release to refresh..." and flip the arrow drawable. This mimics
          * the Twitter app's functionality and looks pretty neat.
          */
-        if (mCurrentScrollState == SCROLL_STATE_TOUCH_SCROLL && mRefreshState != REFRESHING) {
+        if (mCurrentScrollState == SCROLL_STATE_TOUCH_SCROLL
+                && mRefreshState != REFRESHING) {
+            mRefreshView.setVisibility(View.VISIBLE);
             Log.d(TAG, "top=" + mRefreshView.getTop());
 
             if (firstVisibleItem == 0) {
@@ -216,6 +218,11 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                     mRefreshViewImage.startAnimation(mReverseFlipAnimation);
                 }
             }
+        } else if (mCurrentScrollState == SCROLL_STATE_FLING
+                && firstVisibleItem == 0
+                && mRefreshState != REFRESHING) {
+            mRefreshView.setVisibility(View.GONE);
+            scrollListTo(mRefreshViewHeight , 1250);
         }
     }
 
