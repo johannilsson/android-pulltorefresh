@@ -195,27 +195,23 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         if (mCurrentScrollState == SCROLL_STATE_TOUCH_SCROLL
                 && mRefreshState != REFRESHING) {
             mRefreshView.setVisibility(View.VISIBLE);
-            Log.d(TAG, "top=" + mRefreshView.getTop());
 
             if (firstVisibleItem == 0) {
-                if ((mRefreshView.getPaddingTop() > mRefreshOriginalTopPadding
+                if ((mRefreshView.getBottom() > mRefreshViewHeight
                         || mRefreshView.getTop() >= 0)
                         && mRefreshState != RELEASE_TO_REFRESH) {
                     mRefreshState = RELEASE_TO_REFRESH;
                     mRefreshViewText.setText(R.string.pull_to_refresh_release_label);
                     mRefreshViewImage.clearAnimation();
                     mRefreshViewImage.startAnimation(mFlipAnimation);
-                } else if (mRefreshView.getBottom() < mRefreshViewHeight && mRefreshState != PULL_TO_REFRESH) {
-                    Log.d(TAG, "Setting PULL_TO_REFRESH");
+                } else if (mRefreshView.getBottom() < mRefreshViewHeight
+                        && mRefreshState != PULL_TO_REFRESH) {
                     mRefreshState = PULL_TO_REFRESH;
                     mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
                     mRefreshViewImage.clearAnimation();
                     mRefreshViewImage.startAnimation(mReverseFlipAnimation);
                 }
-                Log.d(TAG, "mRefreshView.getBottom()=" + mRefreshView.getBottom());
-                Log.d(TAG, "mRefreshView.getPaddingTop()=" + mRefreshView.getPaddingTop());
             } else {
-                Log.d(TAG, "ELSE");
                 if (mRefreshState != PULL_TO_REFRESH) {
                     mRefreshState = PULL_TO_REFRESH;
                     mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
