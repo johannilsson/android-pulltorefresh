@@ -144,7 +144,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         return super.onTouchEvent(event);
     }
 
-    void applyHeaderPadding(MotionEvent ev) {
+    private void applyHeaderPadding(MotionEvent ev) {
         final int historySize = ev.getHistorySize();
         final int pointerCount = ev.getPointerCount();
         for (int h = 0; h < historySize; h++) {
