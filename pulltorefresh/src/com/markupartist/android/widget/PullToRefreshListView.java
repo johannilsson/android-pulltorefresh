@@ -113,7 +113,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
                 if (getFirstVisiblePosition() == 0 && mRefreshState != REFRESHING) {
-                    if (mRefreshView.getPaddingTop() > mRefreshOriginalTopPadding
+                    if (mRefreshView.getBottom() > mRefreshViewHeight
                             || mRefreshView.getTop() >= 0) {
                         /* Initiate the refresh */
                         mRefreshState = REFRESHING;
