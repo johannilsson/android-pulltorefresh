@@ -121,13 +121,18 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                         onRefresh();
                     } else if (mRefreshView.getBottom() < mRefreshViewHeight) {
                         /* Abort refresh and scroll down below the refresh view */
+                        int scrollBy = mRefreshView.getBottom();
+                        if (mRefreshView.getPaddingTop() > mRefreshOriginalTopPadding) {
+                            scrollBy = scrollBy - (mRefreshView.getPaddingTop() - mRefreshOriginalTopPadding);
+                        }
+
                         mRefreshView.setPadding(
                                 mRefreshView.getPaddingLeft(),
                                 mRefreshOriginalTopPadding,
                                 mRefreshView.getPaddingRight(),
                                 mRefreshView.getPaddingBottom());
 
-                        scrollListTo(mRefreshViewHeight, 750);
+                        scrollListTo(scrollBy, 750);
                     }
                 }
                 break;
