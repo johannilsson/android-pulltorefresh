@@ -2,11 +2,11 @@
 
 This project aims to provide a reusable pull to refresh widget for Android.
 
+![Screenshot](android-pull-to-refresh.png)
+
 **Note:** This widget requires API Level 8 (Android 2.2).
 
-## Demo
-
-<object classid='clsid:d27cdb6e-ae6d-11cf-96b8-444553540000' codebase='http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,115,0' width='560' height='345'><param name='movie' value='http://screenr.com/Content/assets/screenr_1116090935.swf' /><param name='flashvars' value='i=178819' /><param name='allowFullScreen' value='true' /><embed src='http://screenr.com/Content/assets/screenr_1116090935.swf' flashvars='i=178819' allowFullScreen='true' width='560' height='345' pluginspage='http://www.macromedia.com/go/getflashplayer'></embed></object>
+Repository at https://github.com/johannilsson/android-pulltorefresh.
 
 ## Usage
 
