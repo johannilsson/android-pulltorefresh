@@ -2,7 +2,7 @@
 
 This project aims to provide a reusable pull to refresh widget for Android.
 
-![Screenshot](android-pull-to-refresh.png)
+![Screenshot](https://github.com/johannilsson/android-pulltorefresh/raw/master/android-pull-to-refresh.png)
 
 **Note:** This widget requires API Level 8 (Android 2.2).
 
