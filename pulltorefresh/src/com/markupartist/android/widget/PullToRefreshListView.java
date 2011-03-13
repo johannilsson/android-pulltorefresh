@@ -82,7 +82,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         measureView(mRefreshView);
         mRefreshViewHeight = mRefreshView.getMeasuredHeight();
 
-        scrollListTo(mRefreshViewHeight, 0);
+        scrollListBy(mRefreshViewHeight, 0);
     }
 
     /**
@@ -103,7 +103,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
      * @param distance Distance to scroll in pixels.
      * @param duration Duration of the scroll animation in milliseconds.
      */
-    private void scrollListTo(int distance, int duration) {
+    private void scrollListBy(int distance, int duration) {
         try {
             Method method = ListView.class.getMethod("smoothScrollBy",
                     Integer.TYPE, Integer.TYPE);
@@ -144,7 +144,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                                 mRefreshView.getPaddingRight(),
                                 mRefreshView.getPaddingBottom());
 
-                        scrollListTo(scrollBy, 750);
+                        scrollListBy(scrollBy, 750);
                     }
                 }
                 break;
@@ -235,7 +235,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                 && firstVisibleItem == 0
                 && mRefreshState != REFRESHING) {
             mRefreshView.setVisibility(View.GONE);
-            scrollListTo(mRefreshViewHeight , 1250);
+            scrollListBy(mRefreshViewHeight , 1250);
         }
     }
 
@@ -290,7 +290,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         /* If refresh view is visible when loading completes, smoothly scroll down to next item */
         if (mRefreshView.getBottom() > 0) {
             invalidateViews();
-            scrollListTo(mRefreshView.getBottom(), 750);
+            scrollListBy(mRefreshView.getBottom(), 750);
         }
 
         /* Reset refresh state */
