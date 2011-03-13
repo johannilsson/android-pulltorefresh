@@ -70,6 +70,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         mRefreshViewText = (TextView) mRefreshView.findViewById(R.id.pull_to_refresh_text);
         mRefreshViewImage = (ImageView) mRefreshView.findViewById(R.id.pull_to_refresh_image);
         mRefreshViewImage.setMinimumHeight(50);
+        mRefreshView.setOnClickListener(new OnClickRefreshListener());
         mRefreshOriginalTopPadding = mRefreshView.getPaddingTop();
 
         mRefreshState = PULL_TO_REFRESH;
@@ -289,6 +290,24 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
         /* Reset refresh state */
         mRefreshState = PULL_TO_REFRESH;
+    }
+
+    /**
+     * Invoked when the refresh view is clicked on. This is mainly used when
+     * there's only a few items in the list and it's not possible to drag the
+     * list.
+     */
+    private class OnClickRefreshListener implements OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            if (mRefreshState != REFRESHING) {
+                mRefreshState = REFRESHING;
+                prepareForRefresh();
+                onRefresh();
+            }
+        }
+
     }
 
 }
