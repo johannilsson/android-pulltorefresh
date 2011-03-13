@@ -97,10 +97,10 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         try {
             Method method = ListView.class.getMethod("smoothScrollBy",
                     Integer.TYPE, Integer.TYPE);
-            method.invoke(this, distance, duration);
+            method.invoke(this, distance + 1, duration);
         } catch (NoSuchMethodException e) {
             // TODO: Implement smooth scrolling for pre-Froyo devices
-            scrollBy(0, distance);
+            scrollBy(0, distance + 1);
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (IllegalAccessException e) {
