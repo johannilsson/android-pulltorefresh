@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import android.content.Context;
-import android.os.CountDownTimer;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +30,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private static final int REFRESHING = 4;
 
     private static final String TAG = "PullToRefreshListView";
+    private OnRefreshListener mOnRefreshListener;
     private LayoutInflater mInflater;
     private LinearLayout mRefreshView;
     private int mCurrentScrollState;
@@ -83,6 +83,15 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         mRefreshViewHeight = mRefreshView.getMeasuredHeight();
 
         scrollListTo(mRefreshViewHeight, 0);
+    }
+
+    /**
+     * Register a callback to be invoked when this list should be refreshed.
+     * 
+     * @param onRefreshListener The callback to run.
+     */
+    public void setOnRefreshListener(OnRefreshListener onRefreshListener) {
+        mOnRefreshListener = onRefreshListener;
     }
 
     /**
@@ -254,18 +263,14 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     public void onRefresh() {
         Log.d(TAG, "onRefresh");
 
-        // TODO: Temporary, to fake some network work or similar. Replace with callback.
-        new CountDownTimer(4000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-            }
-            @Override
-            public void onFinish() {
-                onRefreshComplete();
-            }
-        }.start();
+        if (mOnRefreshListener != null) {
+            mOnRefreshListener.onRefresh();
+        }
     }
 
+    /**
+     * Resets the list to a normal state after a refresh.
+     */
     public void onRefreshComplete() {        
         Log.d(TAG, "onRefreshComplete");
 
@@ -310,4 +315,17 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
     }
 
+    /**
+     * Interface definition for a callback to be invoked when list should be
+     * refreshed.
+     */
+    public interface OnRefreshListener {
+        /**
+         * Called when the list should be refreshed.
+         * <p>
+         * A call to {@link PullToRefreshListView #onRefreshComplete()} is
+         * expected to indicate that the refresh has completed.
+         */
+        public void onRefresh();
+    }
 }
