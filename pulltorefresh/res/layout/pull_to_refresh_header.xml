@@ -17,8 +17,8 @@
     android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:paddingTop="20dip"
-    android:paddingBottom="20dip"
+    android:paddingTop="10dip"
+    android:paddingBottom="10dip"
     android:gravity="center_vertical"
     android:background="@drawable/pull_to_refresh_header_background">
     <ImageView

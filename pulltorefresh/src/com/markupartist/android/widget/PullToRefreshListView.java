@@ -69,6 +69,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
         mRefreshViewText = (TextView) mRefreshView.findViewById(R.id.pull_to_refresh_text);
         mRefreshViewImage = (ImageView) mRefreshView.findViewById(R.id.pull_to_refresh_image);
+        mRefreshViewImage.setMinimumHeight(50);
         mRefreshOriginalTopPadding = mRefreshView.getPaddingTop();
 
         mRefreshState = PULL_TO_REFRESH;
