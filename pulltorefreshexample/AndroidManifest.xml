@@ -14,5 +14,5 @@
             </intent-filter>
         </activity>
     </application>
-    <uses-sdk minSdkVersion="8" targetSdkVersion="10" />
+    <uses-sdk minSdkVersion="5" targetSdkVersion="10" />
 </manifest> 

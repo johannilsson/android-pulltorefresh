@@ -81,8 +81,11 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
         measureView(mRefreshView);
         mRefreshViewHeight = mRefreshView.getMeasuredHeight();
-
-        scrollListBy(mRefreshViewHeight, 0);
+    }
+    
+    protected void onAttachedToWindow() {
+    	scrollListBy(mRefreshViewHeight, 0);
+    	//setSelection(1);
     }
 
     /**
@@ -109,8 +112,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                     Integer.TYPE, Integer.TYPE);
             method.invoke(this, distance + 1, duration);
         } catch (NoSuchMethodException e) {
-            // TODO: Implement smooth scrolling for pre-Froyo devices
-            scrollBy(0, distance + 1);
+        	setSelection(1);
         } catch (IllegalArgumentException e) {
             throw e;
         } catch (IllegalAccessException e) {
@@ -158,12 +160,36 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
     private void applyHeaderPadding(MotionEvent ev) {
         final int historySize = ev.getHistorySize();
-        final int pointerCount = ev.getPointerCount();
+        int pointerCount = 1;
+        try {
+            Method method = MotionEvent.class.getMethod("getPointerCount");
+            pointerCount = (Integer)method.invoke(ev);
+        } catch (NoSuchMethodException e) {
+            pointerCount = 1;
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (IllegalAccessException e) {
+            System.err.println("unexpected " + e);
+        } catch (InvocationTargetException e) {
+            System.err.println("unexpected " + e);
+        }
+        
         for (int h = 0; h < historySize; h++) {
             for (int p = 0; p < pointerCount; p++) {
                 if (mRefreshState == RELEASE_TO_REFRESH) {
-                    int topPadding =
-                        (int) (ev.getHistoricalY(p, h) / 2) - mRefreshViewHeight;
+                    int topPadding = 0;
+                    try {
+                    	Method method = MotionEvent.class.getMethod("getHistoricalY", Integer.TYPE, Integer.TYPE);
+                    	topPadding = (int)((Float)method.invoke(ev, p, h) - mRefreshViewHeight);
+                    } catch (NoSuchMethodException e) {
+                    	topPadding = (int)ev.getHistoricalY(h) - mRefreshViewHeight;
+                    } catch (IllegalArgumentException e) {
+                        throw e;
+                    } catch (IllegalAccessException e) {
+                        System.err.println("unexpected " + e);
+                    } catch (InvocationTargetException e) {
+                        System.err.println("unexpected " + e);
+                    }
                     mRefreshView.setPadding(
                             mRefreshView.getPaddingLeft(),
                             topPadding,
