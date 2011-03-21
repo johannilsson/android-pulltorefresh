@@ -45,8 +45,7 @@ Repository at <https://github.com/johannilsson/android-pulltorefresh>.
 
 To use the widget on 1.5 the necessary drawables needs to be copied to that
 projects drawable folder. The drawables needed by the widget can be found in
-the drawable-hdpi folder in the library project. For an example of this look
-at the example project.
+the drawable-hdpi folder in the library project.
 
 ## Contributors
 
