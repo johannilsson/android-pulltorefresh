@@ -45,8 +45,9 @@ Repository at <https://github.com/johannilsson/android-pulltorefresh>.
 
 ## Contributors
 
-* Jason Knight <http://www.synthable.com/>
-* Eddie Ringle <http://eddieringle.com/>
+* [Jason Knight](http://www.synthable.com/) - https://github.com/synthable
+* [Eddie Ringle](http://eddieringle.com/) - https://github.com/eddieringle
+* [Christof Dorner](http://chdorner.com) - https://github.com/chdorner
 
 ## License
 Copyright (c) 2011 [Johan Nilsson](http://markupartist.com)
