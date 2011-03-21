@@ -4,8 +4,6 @@ This project aims to provide a reusable pull to refresh widget for Android.
 
 ![Screenshot](https://github.com/johannilsson/android-pulltorefresh/raw/master/android-pull-to-refresh.png)
 
-**Note:** This widget requires API Level 8 (Android 2.2).
-
 Repository at <https://github.com/johannilsson/android-pulltorefresh>.
 
 ## Usage
@@ -42,6 +40,13 @@ Repository at <https://github.com/johannilsson/android-pulltorefresh>.
             super.onPostExecute(result);
         }
     }
+
+## 1.5 Support
+
+To use the widget on 1.5 the necessary drawables needs to be copied to that
+projects drawable folder. The drawables needed by the widget can be found in
+the drawable-hdpi folder in the library project. For an example of this look
+at the example project.
 
 ## Contributors
 
