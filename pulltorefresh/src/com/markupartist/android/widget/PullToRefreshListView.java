@@ -91,10 +91,10 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         measureView(mRefreshView);
         mRefreshViewHeight = mRefreshView.getMeasuredHeight();
     }
-    
+
+    @Override
     protected void onAttachedToWindow() {
-    	scrollListBy(mRefreshViewHeight, 0);
-    	//setSelection(1);
+        scrollListBy(mRefreshViewHeight, 0);
     }
 
     /**
@@ -132,6 +132,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         }
     }
 
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
