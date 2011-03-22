@@ -180,9 +180,9 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                     int topPadding = 0;
                     try {
                     	Method method = MotionEvent.class.getMethod("getHistoricalY", Integer.TYPE, Integer.TYPE);
-                    	topPadding = (int)((Float)method.invoke(ev, p, h) - mRefreshViewHeight);
+                    	topPadding = (int)(((Float)method.invoke(ev, p, h) / 2) - mRefreshViewHeight);
                     } catch (NoSuchMethodException e) {
-                    	topPadding = (int)ev.getHistoricalY(h) - mRefreshViewHeight;
+                    	topPadding = (int) (ev.getHistoricalY(h) / 2) - mRefreshViewHeight;
                     } catch (IllegalArgumentException e) {
                         throw e;
                     } catch (IllegalAccessException e) {
