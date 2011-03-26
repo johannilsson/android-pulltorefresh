@@ -41,6 +41,15 @@ Repository at <https://github.com/johannilsson/android-pulltorefresh>.
         }
     }
 
+### Last Updated
+
+It's possible to add a last updated time using the method `setLastUpdated`
+and `onRefreshComplete`. The text provided to these methods will be set below
+the Release to refresh text. Note that the time representation is not validated
+replaces the previous text, which means that it's possible and recommended to
+add a text similar to "Last Update: 15:23". This might be changed in future
+versions.
+
 ## 1.5 Support
 
 To use the widget on 1.5 the necessary drawables needs to be copied to that
@@ -52,6 +61,11 @@ the drawable-hdpi folder in the library project.
 * [Jason Knight](http://www.synthable.com/) - https://github.com/synthable
 * [Eddie Ringle](http://eddieringle.com/) - https://github.com/eddieringle
 * [Christof Dorner](http://chdorner.com) - https://github.com/chdorner
+
+## Are you using this widget?
+
+If you are using this widget and want to be featured in a gallery of apps using
+it? Then please send a screenshot and details of your app to me.
 
 ## License
 Copyright (c) 2011 [Johan Nilsson](http://markupartist.com)
