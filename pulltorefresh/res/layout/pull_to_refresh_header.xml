@@ -48,7 +48,7 @@
             android:visibility="gone"
             android:layout_gravity="center"
             android:gravity="center"
-            android:src="@drawable/ic_pull_arrow"
+            android:src="@drawable/ic_pulltorefresh_arrow"
             />
         <TextView
             android:id="@+id/pull_to_refresh_text"
