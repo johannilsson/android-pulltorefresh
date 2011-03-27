@@ -233,17 +233,24 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     }
 
     /**
+     * Sets the header padding back to original size.
+     */
+    private void resetHeaderPadding() {
+        mRefreshView.setPadding(
+                mRefreshView.getPaddingLeft(),
+                mRefreshOriginalTopPadding,
+                mRefreshView.getPaddingRight(),
+                mRefreshView.getPaddingBottom());
+    }
+
+    /**
      * Resets the header to the original state.
      */
     private void resetHeader() {
         if (mRefreshState != TAP_TO_REFRESH) {
             mRefreshState = TAP_TO_REFRESH;
 
-            mRefreshView.setPadding(
-                    mRefreshView.getPaddingLeft(),
-                    mRefreshOriginalTopPadding,
-                    mRefreshView.getPaddingRight(),
-                    mRefreshView.getPaddingBottom());
+            resetHeaderPadding();
 
             // Set refresh view text to the pull label
             mRefreshViewText.setText(R.string.pull_to_refresh_tap_label);
@@ -317,7 +324,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     }
 
     public void prepareForRefresh() {
-        resetHeader();
+        resetHeaderPadding();
 
         mRefreshViewImage.setVisibility(View.GONE);
         // We need this hack, otherwise it will keep the previous drawable.
@@ -326,6 +333,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
         // Set refresh view text to the refreshing label
         mRefreshViewText.setText(R.string.pull_to_refresh_refreshing_label);
+
+        mRefreshState = REFRESHING;
     }
 
     public void onRefresh() {
@@ -359,9 +368,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             invalidateViews();
             setSelection(1);
         }
-
-        // Reset refresh state
-        mRefreshState = TAP_TO_REFRESH;
     }
 
     /**
@@ -374,7 +380,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         @Override
         public void onClick(View v) {
             if (mRefreshState != REFRESHING) {
-                mRefreshState = REFRESHING;
                 prepareForRefresh();
                 onRefresh();
             }
