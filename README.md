@@ -61,6 +61,7 @@ the drawable-hdpi folder in the library project.
 * [Jason Knight](http://www.synthable.com/) - https://github.com/synthable
 * [Eddie Ringle](http://eddieringle.com/) - https://github.com/eddieringle
 * [Christof Dorner](http://chdorner.com) - https://github.com/chdorner
+* [Olof Brickarp](http://www.yay.se)
 
 ## Are you using this widget?
 
