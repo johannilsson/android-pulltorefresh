@@ -49,6 +49,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
     private int mRefreshViewHeight;
     private int mRefreshOriginalTopPadding;
+    private int mLastMotionY;
 
     public PullToRefreshListView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -158,8 +159,14 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        final int y = (int) event.getY();
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
+                if (!isVerticalScrollBarEnabled()) {
+                    setVerticalScrollBarEnabled(true);
+                }
+
                 if (getFirstVisiblePosition() == 0 && mRefreshState != REFRESHING) {
                     if (mRefreshView.getBottom() > mRefreshViewHeight
                             || mRefreshView.getTop() >= 0
@@ -174,6 +181,9 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                         setSelection(1);
                     }
                 }
+                break;
+            case MotionEvent.ACTION_DOWN:
+                mLastMotionY = y;
                 break;
             case MotionEvent.ACTION_MOVE:
                 applyHeaderPadding(event);
@@ -204,17 +214,19 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         for (int h = 0; h < historySize; h++) {
             for (int p = 0; p < pointerCount; p++) {
                 if (mRefreshState == RELEASE_TO_REFRESH) {
-                    int topPadding = 0;
+                    if (isVerticalFadingEdgeEnabled()) {
+                        setVerticalScrollBarEnabled(false);
+                    }
+
+                    int historicalY = 0;
                     try {
                         // For Android > 2.0
                         Method method = MotionEvent.class.getMethod(
                                 "getHistoricalY", Integer.TYPE, Integer.TYPE);
-                        topPadding = (int) (((Float) method.invoke(ev, p, h) / 2)
-                                - mRefreshViewHeight);
+                        historicalY = ((Float) method.invoke(ev, p, h)).intValue();
                     } catch (NoSuchMethodException e) {
                         // For Android < 2.0
-                        topPadding = (int) (ev.getHistoricalY(h) / 2)
-                                - mRefreshViewHeight;
+                        historicalY = (int) (ev.getHistoricalY(h));
                     } catch (IllegalArgumentException e) {
                         throw e;
                     } catch (IllegalAccessException e) {
@@ -222,6 +234,12 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                     } catch (InvocationTargetException e) {
                         System.err.println("unexpected " + e);
                     }
+
+                    // Calculate the padding to apply, we divide by 1.7 to
+                    // simulate a more resistant effect during pull.
+                    int topPadding = (int) (((historicalY - mLastMotionY)
+                            - mRefreshViewHeight) / 1.7);
+
                     mRefreshView.setPadding(
                             mRefreshView.getPaddingLeft(),
                             topPadding,
