@@ -293,19 +293,21 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                 && mRefreshState != REFRESHING) {
             if (firstVisibleItem == 0) {
                 mRefreshViewImage.setVisibility(View.VISIBLE);
-                if ((mRefreshView.getBottom() > mRefreshViewHeight
+                if ((mRefreshView.getBottom() > mRefreshViewHeight + 20
                         || mRefreshView.getTop() >= 0)
                         && mRefreshState != RELEASE_TO_REFRESH) {
-                    mRefreshState = RELEASE_TO_REFRESH;
                     mRefreshViewText.setText(R.string.pull_to_refresh_release_label);
                     mRefreshViewImage.clearAnimation();
                     mRefreshViewImage.startAnimation(mFlipAnimation);
-                } else if (mRefreshView.getBottom() < mRefreshViewHeight
+                    mRefreshState = RELEASE_TO_REFRESH;
+                } else if (mRefreshView.getBottom() < mRefreshViewHeight + 20
                         && mRefreshState != PULL_TO_REFRESH) {
-                    mRefreshState = PULL_TO_REFRESH;
                     mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
-                    mRefreshViewImage.clearAnimation();
-                    mRefreshViewImage.startAnimation(mReverseFlipAnimation);
+                    if (mRefreshState != TAP_TO_REFRESH) {
+                        mRefreshViewImage.clearAnimation();
+                        mRefreshViewImage.startAnimation(mReverseFlipAnimation);
+                    }
+                    mRefreshState = PULL_TO_REFRESH;
                 }
             } else {
                 mRefreshViewImage.setVisibility(View.GONE);
