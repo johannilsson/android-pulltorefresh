@@ -51,9 +51,22 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private int mRefreshOriginalTopPadding;
     private int mLastMotionY;
 
+    public PullToRefreshListView(Context context) {
+        super(context);
+        init(context);
+    }
+
     public PullToRefreshListView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init(context);
+    }
 
+    public PullToRefreshListView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        init(context);
+    }
+
+    private void init(Context context) {
         // Load all of the animations we need in code rather than through XML
         mFlipAnimation = new RotateAnimation(0, -180,
                 RotateAnimation.RELATIVE_TO_SELF, 0.5f,
