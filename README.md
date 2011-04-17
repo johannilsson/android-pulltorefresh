@@ -62,6 +62,7 @@ the drawable-hdpi folder in the library project.
 * [Eddie Ringle](http://eddieringle.com/) - https://github.com/eddieringle
 * [Christof Dorner](http://chdorner.com) - https://github.com/chdorner
 * [Olof Brickarp](http://www.yay.se)
+* [James Smith](http://loopj.com/) - <https://github.com/loopj>
 
 ## Are you using this widget?
 
