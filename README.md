@@ -58,9 +58,9 @@ the drawable-hdpi folder in the library project.
 
 ## Contributors
 
-* [Jason Knight](http://www.synthable.com/) - https://github.com/synthable
-* [Eddie Ringle](http://eddieringle.com/) - https://github.com/eddieringle
-* [Christof Dorner](http://chdorner.com) - https://github.com/chdorner
+* [Jason Knight](http://www.synthable.com/) - <https://github.com/synthable>
+* [Eddie Ringle](http://eddieringle.com/) - <https://github.com/eddieringle>
+* [Christof Dorner](http://chdorner.com) - <https://github.com/chdorner>
 * [Olof Brickarp](http://www.yay.se) - <https://github.com/coolof>
 * [James Smith](http://loopj.com/) - <https://github.com/loopj>
 
