@@ -10,39 +10,36 @@ Repository at <https://github.com/johannilsson/android-pulltorefresh>.
 
 ### Layout
 
-``` xml
-<!--
-  The PullToRefreshListView replaces a standard ListView widget.
--->
-<com.markupartist.android.widget.PullToRefreshListView
-    android:id="@+id/android:list"
-    android:layout_height="fill_parent"
-    android:layout_width="fill_parent"
-    />
-```
+    <!--
+      The PullToRefreshListView replaces a standard ListView widget.
+    -->
+    <com.markupartist.android.widget.PullToRefreshListView
+        android:id="@+id/android:list"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        />
+
 ### Activity
 
-``` java
-// Set a listener to be invoked when the list should be refreshed.
-((PullToRefreshListView) getListView()).setOnRefreshListener(new OnRefreshListener() {
-    @Override
-    public void onRefresh() {
-        // Do work to refresh the list here.
-        new GetDataTask().execute();
-    }
-});
+    // Set a listener to be invoked when the list should be refreshed.
+    ((PullToRefreshListView) getListView()).setOnRefreshListener(new OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            // Do work to refresh the list here.
+            new GetDataTask().execute();
+        }
+    });
 
-private class GetDataTask extends AsyncTask<Void, Void, String[]> {
-    ...
-    @Override
-    protected void onPostExecute(String[] result) {
-        mListItems.addFirst("Added after refresh...");
-        // Call onRefreshComplete when the list has been refreshed.
-        ((PullToRefreshListView) getListView()).onRefreshComplete();
-        super.onPostExecute(result);
+    private class GetDataTask extends AsyncTask<Void, Void, String[]> {
+        ...
+        @Override
+        protected void onPostExecute(String[] result) {
+            mListItems.addFirst("Added after refresh...");
+            // Call onRefreshComplete when the list has been refreshed.
+            ((PullToRefreshListView) getListView()).onRefreshComplete();
+            super.onPostExecute(result);
+        }
     }
-}
-```
 
 ### Last Updated
 
