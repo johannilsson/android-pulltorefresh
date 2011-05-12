@@ -19,7 +19,7 @@ public class PullToRefreshActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.pull_to_refresh);
-
+  
         // Set a listener to be invoked when the list should be refreshed.
         ((PullToRefreshListView) getListView()).setOnRefreshListener(new OnRefreshListener() {
             @Override
@@ -28,7 +28,6 @@ public class PullToRefreshActivity extends ListActivity {
                 new GetDataTask().execute();
             }
         });
-
         mListItems = new LinkedList<String>();
         mListItems.addAll(Arrays.asList(mStrings));
 
@@ -67,4 +66,9 @@ public class PullToRefreshActivity extends ListActivity {
             "Abondance", "Ackawi", "Acorn", "Adelost", "Affidelice au Chablis",
             "Afuega'l Pitu", "Airag", "Airedale", "Aisy Cendre",
             "Allgauer Emmentaler"};
+    
+  /*  private String[] mStrings = {
+            "Abbaye de Belloc", "Abbaye du Mont des Cats", };*/
+    
+  /*  private String[] mStrings = {};*/
 }

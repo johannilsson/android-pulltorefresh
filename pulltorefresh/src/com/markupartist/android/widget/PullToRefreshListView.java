@@ -35,14 +35,17 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private OnRefreshListener mOnRefreshListener;
     private LayoutInflater mInflater;
 
-    private LinearLayout mRefreshView;
+    private View mRefreshView;
     private TextView mRefreshViewText;
     private ImageView mRefreshViewImage;
     private ProgressBar mRefreshViewProgress;
     private TextView mRefreshViewLastUpdated;
+    private View mRefreshInnerView;
 
     private int mCurrentScrollState;
     private int mRefreshState;
+    
+    private boolean hideHeader;
 
     private RotateAnimation mFlipAnimation;
     private RotateAnimation mReverseFlipAnimation;
@@ -50,6 +53,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private int mRefreshViewHeight;
     private int mRefreshOriginalTopPadding;
     private int mLastMotionY;
+	
 
     public PullToRefreshListView(Context context) {
         super(context);
@@ -67,6 +71,10 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     }
 
     private void init(Context context) {
+    	
+    	//Setting the header to hidden
+    	setHeaderToHidden(true);
+    	
         // Load all of the animations we need in code rather than through XML
         mFlipAnimation = new RotateAnimation(0, -180,
                 RotateAnimation.RELATIVE_TO_SELF, 0.5f,
@@ -84,8 +92,10 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         mInflater = (LayoutInflater) context.getSystemService(
                 Context.LAYOUT_INFLATER_SERVICE);
 
-        mRefreshView = (LinearLayout) mInflater.inflate(
+        mRefreshView = (View) mInflater.inflate(
                 R.layout.pull_to_refresh_header, null);
+        
+        mRefreshInnerView = (View)mRefreshView.findViewById(R.id.pull_to_refresh_view);
 
         mRefreshViewText =
             (TextView) mRefreshView.findViewById(R.id.pull_to_refresh_text);
@@ -108,6 +118,10 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
         measureView(mRefreshView);
         mRefreshViewHeight = mRefreshView.getMeasuredHeight();
+        
+        if (hideHeader){
+        	mRefreshInnerView.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -176,6 +190,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
+            	
                 if (!isVerticalScrollBarEnabled()) {
                     setVerticalScrollBarEnabled(true);
                 }
@@ -292,7 +307,13 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             // Hide progress bar and arrow.
             mRefreshViewImage.setVisibility(View.GONE);
             mRefreshViewProgress.setVisibility(View.GONE);
+           
         }
+        
+        if (hideHeader){
+        	mRefreshInnerView.setVisibility(View.GONE);
+        }
+       
     }
 
     private void measureView(View child) {
@@ -318,15 +339,22 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem,
             int visibleItemCount, int totalItemCount) {
+    	
+    	
+    	
         // When the refresh view is completely visible, change the text to say
         // "Release to refresh..." and flip the arrow drawable.
         if (mCurrentScrollState == SCROLL_STATE_TOUCH_SCROLL
-                && mRefreshState != REFRESHING) {
+                && mRefreshState != REFRESHING) {        	
             if (firstVisibleItem == 0) {
+            	if (mRefreshInnerView.getVisibility()==View.GONE){
+                	mRefreshInnerView.setVisibility(View.VISIBLE);
+                }
                 mRefreshViewImage.setVisibility(View.VISIBLE);
                 if ((mRefreshView.getBottom() > mRefreshViewHeight + 20
                         || mRefreshView.getTop() >= 0)
                         && mRefreshState != RELEASE_TO_REFRESH) {
+                	
                     mRefreshViewText.setText(R.string.pull_to_refresh_release_label);
                     mRefreshViewImage.clearAnimation();
                     mRefreshViewImage.startAnimation(mFlipAnimation);
@@ -357,6 +385,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     }
 
     public void prepareForRefresh() {
+    	
         resetHeaderPadding();
 
         mRefreshViewImage.setVisibility(View.GONE);
@@ -432,5 +461,14 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
          * expected to indicate that the refresh has completed.
          */
         public void onRefresh();
+    }
+    
+    /**
+     * Method that sets flag to determine if header is to be hidden in an empty list or list with 
+     * elements less than the visible elements
+     * @param isHidden
+     */
+    public void setHeaderToHidden(boolean isHidden){
+    	hideHeader = isHidden;
     }
 }
