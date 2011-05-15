@@ -67,8 +67,7 @@ public class PullToRefreshActivity extends ListActivity {
             "Afuega'l Pitu", "Airag", "Airedale", "Aisy Cendre",
             "Allgauer Emmentaler"};
     
-  /*  private String[] mStrings = {
-            "Abbaye de Belloc", "Abbaye du Mont des Cats", };*/
+   // private String[] mStrings = {"Abbaye de Belloc", "Abbaye du Mont des Cats", };
     
   /*  private String[] mStrings = {};*/
 }

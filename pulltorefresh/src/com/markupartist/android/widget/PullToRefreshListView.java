@@ -52,7 +52,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private int mRefreshViewHeight;
     private int mRefreshOriginalTopPadding;
     private int mLastMotionY;
-	private int lastKnownPosition;
 	
 
     public PullToRefreshListView(Context context) {
@@ -123,30 +122,29 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         	mRefreshInnerView.setVisibility(View.GONE);
         }
         
-        lastKnownPosition = 1;
     }
 
     @Override
     protected void onAttachedToWindow() {
-        setSelection(lastKnownPosition);
+        setSelection(1);
     }
 
     @Override
     public void setAdapter(ListAdapter adapter) {
         super.setAdapter(adapter);
-        setSelection(lastKnownPosition);
+        setSelection(1);
     }
     
     @Override
 	public void onSizeChanged(int w, int h, int oldw, int oldh){
 		super.onSizeChanged(w, h, oldw, oldh);
-		setSelection(lastKnownPosition);
+		setSelection(1);
 	}
     
     @Override
 	public void onWindowFocusChanged(boolean hasWindowFocus){
 		super.onWindowFocusChanged(hasWindowFocus);
-		this.setSelection(lastKnownPosition);
+		this.setSelection(1);
 	}
 
     /**
@@ -200,16 +198,13 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         final int y = (int) event.getY();
-
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
-            	
                 if (!isVerticalScrollBarEnabled()) {
                     setVerticalScrollBarEnabled(true);
                 }
-
-                if (getFirstVisiblePosition() == 0 && mRefreshState != REFRESHING) {
-                    if (mRefreshView.getBottom() > mRefreshViewHeight
+                if (getFirstVisiblePosition() == 0 && mRefreshState != REFRESHING) {                	
+                    if (mRefreshView.getBottom() >= mRefreshViewHeight
                             || mRefreshView.getTop() >= 0
                             && mRefreshState == RELEASE_TO_REFRESH) {
                         // Initiate the refresh
@@ -353,14 +348,10 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     public void onScroll(AbsListView view, int firstVisibleItem,
             int visibleItemCount, int totalItemCount) {
     	
-    	if (firstVisibleItem != 0){
-			lastKnownPosition = firstVisibleItem;
-		}
-    	
         // When the refresh view is completely visible, change the text to say
         // "Release to refresh..." and flip the arrow drawable.
         if (mCurrentScrollState == SCROLL_STATE_TOUCH_SCROLL
-                && mRefreshState != REFRESHING) {        	
+                && mRefreshState != REFRESHING) {  
             if (firstVisibleItem == 0) {
             	if (mRefreshInnerView.getVisibility()==View.GONE){
                 	mRefreshInnerView.setVisibility(View.VISIBLE);
@@ -373,7 +364,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                     mRefreshViewImage.clearAnimation();
                     mRefreshViewImage.startAnimation(mFlipAnimation);
                     mRefreshState = RELEASE_TO_REFRESH;
-                } else if (mRefreshView.getBottom() < mRefreshViewHeight + 5
+                } else if (mRefreshView.getBottom() < mRefreshViewHeight + 7
                         && mRefreshState != PULL_TO_REFRESH) {
                     mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
                     if (mRefreshState != TAP_TO_REFRESH) {
@@ -401,7 +392,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     public void prepareForRefresh() {
     	
         resetHeaderPadding();
-
         mRefreshViewImage.setVisibility(View.GONE);
         // We need this hack, otherwise it will keep the previous drawable.
         mRefreshViewImage.setImageDrawable(null);
