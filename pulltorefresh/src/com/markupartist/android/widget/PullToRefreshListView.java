@@ -32,7 +32,13 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private static final int REFRESHING = 4;
 
     private static final String TAG = "PullToRefreshListView";
+
     private OnRefreshListener mOnRefreshListener;
+
+    /**
+     * Listener that will receive notifications every time the list scrolls.
+     */
+    private OnScrollListener mOnScrollListener;
     private LayoutInflater mInflater;
 
     private LinearLayout mRefreshView;
@@ -104,7 +110,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
         addHeaderView(mRefreshView);
 
-        setOnScrollListener(this);
+        super.setOnScrollListener(this);
 
         measureView(mRefreshView);
         mRefreshViewHeight = mRefreshView.getMeasuredHeight();
@@ -120,6 +126,17 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         super.setAdapter(adapter);
 
         setSelection(1);
+    }
+
+    /**
+     * Set the listener that will receive notifications every time the list
+     * scrolls.
+     * 
+     * @param l The scroll listener. 
+     */
+    @Override
+    public void setOnScrollListener(AbsListView.OnScrollListener l) {
+        mOnScrollListener = l;
     }
 
     /**
@@ -349,11 +366,20 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                 && mRefreshState != REFRESHING) {
             setSelection(1);
         }
+
+        if (mOnScrollListener != null) {
+            mOnScrollListener.onScroll(view, firstVisibleItem,
+                    visibleItemCount, totalItemCount);
+        }
     }
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
         mCurrentScrollState = scrollState;
+
+        if (mOnScrollListener != null) {
+            mOnScrollListener.onScrollStateChanged(view, scrollState);
+        }
     }
 
     public void prepareForRefresh() {
