@@ -57,6 +57,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private int mRefreshOriginalTopPadding;
     private int mLastMotionY;
 
+    private boolean mBounceHack;
+
     public PullToRefreshListView(Context context) {
         super(context);
         init(context);
@@ -365,6 +367,11 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                 && firstVisibleItem == 0
                 && mRefreshState != REFRESHING) {
             setSelection(1);
+            
+            // The list was bouncing at the top after flinging. This will fix that problem.
+            mBounceHack = true;
+        } else if (mBounceHack) {
+            setSelection(1);
         }
 
         if (mOnScrollListener != null) {
@@ -376,6 +383,11 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
         mCurrentScrollState = scrollState;
+
+        // We stopped flinging. We no longer need to do the bounce hack.
+        if (mCurrentScrollState == SCROLL_STATE_IDLE) {
+        	mBounceHack = false;
+        }
 
         if (mOnScrollListener != null) {
             mOnScrollListener.onScrollStateChanged(view, scrollState);
