@@ -10,36 +10,40 @@ Repository at <https://github.com/johannilsson/android-pulltorefresh>.
 
 ### Layout
 
-    <!--
-      The PullToRefreshListView replaces a standard ListView widget.
-    -->
-    <com.markupartist.android.widget.PullToRefreshListView
-        android:id="@+id/android:list"
-        android:layout_height="fill_parent"
-        android:layout_width="fill_parent"
-        />
+``` xml
+<!--
+  The PullToRefreshListView replaces a standard ListView widget.
+-->
+<com.markupartist.android.widget.PullToRefreshListView
+    android:id="@+id/android:list"
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
+    />
+```
 
 ### Activity
 
-    // Set a listener to be invoked when the list should be refreshed.
-    ((PullToRefreshListView) getListView()).setOnRefreshListener(new OnRefreshListener() {
-        @Override
-        public void onRefresh() {
-            // Do work to refresh the list here.
-            new GetDataTask().execute();
-        }
-    });
-
-    private class GetDataTask extends AsyncTask<Void, Void, String[]> {
-        ...
-        @Override
-        protected void onPostExecute(String[] result) {
-            mListItems.addFirst("Added after refresh...");
-            // Call onRefreshComplete when the list has been refreshed.
-            ((PullToRefreshListView) getListView()).onRefreshComplete();
-            super.onPostExecute(result);
-        }
+``` java
+// Set a listener to be invoked when the list should be refreshed.
+((PullToRefreshListView) getListView()).setOnRefreshListener(new OnRefreshListener() {
+    @Override
+    public void onRefresh() {
+        // Do work to refresh the list here.
+        new GetDataTask().execute();
     }
+});
+
+private class GetDataTask extends AsyncTask<Void, Void, String[]> {
+    ...
+    @Override
+    protected void onPostExecute(String[] result) {
+        mListItems.addFirst("Added after refresh...");
+        // Call onRefreshComplete when the list has been refreshed.
+        ((PullToRefreshListView) getListView()).onRefreshComplete();
+        super.onPostExecute(result);
+    }
+}
+```
 
 ### Last Updated
 
@@ -66,8 +70,8 @@ the drawable-hdpi folder in the library project.
 
 ## Are you using this widget?
 
-If you are using this widget and want to be featured in a gallery of apps using
-it? Then please send a screenshot and details of your app to me.
+If you are using this widget please feel free to add your app to the
+[wiki](https://github.com/johannilsson/android-pulltorefresh/wiki/Apps).
 
 ## License
 Copyright (c) 2011 [Johan Nilsson](http://markupartist.com)
