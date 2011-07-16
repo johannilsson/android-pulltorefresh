@@ -196,10 +196,9 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                 if (!isVerticalScrollBarEnabled()) {
                     setVerticalScrollBarEnabled(true);
                 }
-
                 if (getFirstVisiblePosition() == 0 && mRefreshState != REFRESHING) {
-                    if (mRefreshView.getBottom() > mRefreshViewHeight
-                            || mRefreshView.getTop() >= 0
+                    if ((mRefreshView.getBottom() > mRefreshViewHeight
+                            || mRefreshView.getTop() >= 0)
                             && mRefreshState == RELEASE_TO_REFRESH) {
                         // Initiate the refresh
                         mRefreshState = REFRESHING;
