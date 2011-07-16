@@ -161,32 +161,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         }
     }
 
-    /**
-     * Smoothly scroll by distance pixels over duration milliseconds.
-     * 
-     * <p>Using reflection internally to call smoothScrollBy for API Level 8
-     * otherwise scrollBy is called.
-     * 
-     * @param distance Distance to scroll in pixels.
-     * @param duration Duration of the scroll animation in milliseconds.
-     */
-    private void scrollListBy(int distance, int duration) {
-        try {
-            Method method = ListView.class.getMethod("smoothScrollBy",
-                    Integer.TYPE, Integer.TYPE);
-            method.invoke(this, distance + 1, duration);
-        } catch (NoSuchMethodException e) {
-            // If smoothScrollBy is not available (< 2.2)
-        	setSelection(1);
-        } catch (IllegalArgumentException e) {
-            throw e;
-        } catch (IllegalAccessException e) {
-            System.err.println("unexpected " + e);
-        } catch (InvocationTargetException e) {
-            System.err.println("unexpected " + e);
-        }
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         final int y = (int) event.getY();
