@@ -204,7 +204,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                         mRefreshState = REFRESHING;
                         prepareForRefresh();
                         onRefresh();
-                    } else if (mRefreshView.getBottom() < mRefreshViewHeight) {
+                    } else if (mRefreshView.getBottom() < mRefreshViewHeight
+                            || mRefreshView.getTop() < 0) {
                         // Abort refresh and scroll down below the refresh view
                         resetHeader();
                         setSelection(1);
