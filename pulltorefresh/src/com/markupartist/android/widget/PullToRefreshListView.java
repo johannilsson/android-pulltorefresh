@@ -271,7 +271,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private void resetHeader() {
         if (mRefreshState != TAP_TO_REFRESH) {
             mRefreshState = TAP_TO_REFRESH;
-
+            smoothScrollBy(mRefreshViewHeight,10);
             resetHeaderPadding();
 
             // Set refresh view text to the pull label
