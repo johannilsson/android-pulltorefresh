@@ -13,21 +13,15 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:paddingTop="10dip"
-    android:paddingBottom="15dip"
-    android:gravity="center_vertical|center_horizontal"
-    android:background="@drawable/pull_to_refresh_header_background"
-    >
-    <RelativeLayout
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:gravity="center_vertical|center_horizontal"
+		android:paddingTop="10dip"
+		android:paddingBottom="15dip"
+        android:gravity="center"
         >
-        <ProgressBar
+        <ProgressBar 
             android:id="@+id/pull_to_refresh_progress"
             android:indeterminate="true"
             android:layout_width="wrap_content"
@@ -72,4 +66,3 @@
             android:gravity="center"
             />
     </RelativeLayout>
-</LinearLayout>
