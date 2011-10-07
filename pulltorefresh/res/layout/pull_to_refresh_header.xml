@@ -20,6 +20,7 @@
     android:paddingTop="10dip"
     android:paddingBottom="15dip"
     android:gravity="center"
+        android:id="@+id/pull_to_refresh_header"
     >
     <ProgressBar 
         android:id="@+id/pull_to_refresh_progress"
