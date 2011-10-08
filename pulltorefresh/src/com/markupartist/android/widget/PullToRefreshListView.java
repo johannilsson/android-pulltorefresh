@@ -196,8 +196,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     }
 
     private void applyHeaderPadding(MotionEvent ev) {
-        final int historySize = ev.getHistorySize();
-
         // Workaround for getPointerCount() which is unavailable in 1.5
         // (it's always 1 in 1.5)
         int pointerCount = 1;
@@ -214,29 +212,14 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             System.err.println("unexpected " + e);
         }
 
-        for (int h = 0; h < historySize; h++) {
             for (int p = 0; p < pointerCount; p++) {
                 if (mRefreshState == RELEASE_TO_REFRESH) {
                     if (isVerticalFadingEdgeEnabled()) {
                         setVerticalScrollBarEnabled(false);
                     }
 
-                    int historicalY = 0;
-                    try {
-                        // For Android > 2.0
-                        Method method = MotionEvent.class.getMethod(
-                                "getHistoricalY", Integer.TYPE, Integer.TYPE);
-                        historicalY = ((Float) method.invoke(ev, p, h)).intValue();
-                    } catch (NoSuchMethodException e) {
-                        // For Android < 2.0
-                        historicalY = (int) (ev.getHistoricalY(h));
-                    } catch (IllegalArgumentException e) {
-                        throw e;
-                    } catch (IllegalAccessException e) {
-                        System.err.println("unexpected " + e);
-                    } catch (InvocationTargetException e) {
-                        System.err.println("unexpected " + e);
-                    }
+                    int historicalY = (int) ev.getHistoricalY(p);
+                    
 
                     // Calculate the padding to apply, we divide by 1.7 to
                     // simulate a more resistant effect during pull.
@@ -250,7 +233,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                             mRefreshView.getPaddingBottom());
                 }
             }
-        }
     }
 
     /**
