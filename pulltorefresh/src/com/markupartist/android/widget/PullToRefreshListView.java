@@ -57,6 +57,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private int mRefreshOriginalTopPadding;
     private int mLastMotionY;
 
+    private boolean mBounceHack;
+
     public PullToRefreshListView(Context context) {
         super(context);
         init(context);
@@ -163,6 +165,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         final int y = (int) event.getY();
+        mBounceHack = false;
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
@@ -319,6 +322,9 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                 && firstVisibleItem == 0
                 && mRefreshState != REFRESHING) {
             setSelection(1);
+            mBounceHack = true;
+        } else if (mBounceHack && mCurrentState == SCROLL_STATE_FLING) {
+            setSelected(1);
         }
 
         if (mOnScrollListener != null) {
@@ -330,6 +336,10 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
         mCurrentScrollState = scrollState;
+
+        if (mCurrentScrollState == SCROLL_STATE_IDLE) {
+            mBounceHack = false;
+        }
 
         if (mOnScrollListener != null) {
             mOnScrollListener.onScrollStateChanged(view, scrollState);
