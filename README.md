@@ -70,6 +70,7 @@ the drawable-hdpi folder in the library project.
 * [Alex Volovoy](http://bytesharp.com/) - <https://github.com/avolovoy>
 * Bo Maryniuk
 * [kidfolk](https://github.com/kidfolk)
+* [Tim Mahoney](https://github.com/timahoney)
 
 ## Are you using this widget?
 
