@@ -212,27 +212,26 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             System.err.println("unexpected " + e);
         }
 
-            for (int p = 0; p < pointerCount; p++) {
-                if (mRefreshState == RELEASE_TO_REFRESH) {
-                    if (isVerticalFadingEdgeEnabled()) {
-                        setVerticalScrollBarEnabled(false);
-                    }
-
-                    int historicalY = (int) ev.getHistoricalY(p);
-                    
-
-                    // Calculate the padding to apply, we divide by 1.7 to
-                    // simulate a more resistant effect during pull.
-                    int topPadding = (int) (((historicalY - mLastMotionY)
-                            - mRefreshViewHeight) / 1.7);
-
-                    mRefreshView.setPadding(
-                            mRefreshView.getPaddingLeft(),
-                            topPadding,
-                            mRefreshView.getPaddingRight(),
-                            mRefreshView.getPaddingBottom());
+        for (int p = 0; p < pointerCount; p++) {
+            if (mRefreshState == RELEASE_TO_REFRESH) {
+                if (isVerticalFadingEdgeEnabled()) {
+                    setVerticalScrollBarEnabled(false);
                 }
+
+                int historicalY = (int) ev.getHistoricalY(p);
+
+                // Calculate the padding to apply, we divide by 1.7 to
+                // simulate a more resistant effect during pull.
+                int topPadding = (int) (((historicalY - mLastMotionY)
+                        - mRefreshViewHeight) / 1.7);
+
+                mRefreshView.setPadding(
+                        mRefreshView.getPaddingLeft(),
+                        topPadding,
+                        mRefreshView.getPaddingRight(),
+                        mRefreshView.getPaddingBottom());
             }
+        }
     }
 
     /**
