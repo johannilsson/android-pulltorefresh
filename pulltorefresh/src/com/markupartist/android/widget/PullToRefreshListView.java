@@ -323,8 +323,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                 && mRefreshState != REFRESHING) {
             setSelection(1);
             mBounceHack = true;
-        } else if (mBounceHack && mCurrentState == SCROLL_STATE_FLING) {
-            setSelected(1);
+        } else if (mBounceHack && mCurrentScrollState == SCROLL_STATE_FLING) {
+            setSelection(1);
         }
 
         if (mOnScrollListener != null) {
