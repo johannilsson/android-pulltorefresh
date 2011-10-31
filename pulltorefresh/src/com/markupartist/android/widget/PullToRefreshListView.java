@@ -199,21 +199,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     }
 
     private void applyHeaderPadding(MotionEvent ev) {
-        // Workaround for getPointerCount() which is unavailable in 1.5
-        // (it's always 1 in 1.5)
-        int pointerCount = 1;
-        try {
-            Method method = MotionEvent.class.getMethod("getPointerCount");
-            pointerCount = (Integer)method.invoke(ev);
-        } catch (NoSuchMethodException e) {
-            pointerCount = 1;
-        } catch (IllegalArgumentException e) {
-            throw e;
-        } catch (IllegalAccessException e) {
-            System.err.println("unexpected " + e);
-        } catch (InvocationTargetException e) {
-            System.err.println("unexpected " + e);
-        }
+        // getHistorySize has been available since API 1
+        int pointerCount = ev.getHistorySize();
 
         for (int p = 0; p < pointerCount; p++) {
             if (mRefreshState == RELEASE_TO_REFRESH) {
