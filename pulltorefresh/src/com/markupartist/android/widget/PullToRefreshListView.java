@@ -2,6 +2,7 @@ package com.markupartist.android.widget;
 
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,6 +54,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private int mRefreshViewHeight;
     private int mRefreshOriginalTopPadding;
     private int mLastMotionY;
+    private int mHeight = -1;
 
     private boolean mBounceHack;
 
@@ -112,6 +114,22 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
         measureView(mRefreshView);
         mRefreshViewHeight = mRefreshView.getMeasuredHeight();
+    }
+    
+    @Override
+    protected void onDraw(Canvas canvas) {
+       super.onDraw(canvas);
+       if (mHeight == -1) {  // do it only once
+    	   mHeight = getHeight(); // getHeight only returns useful data after first onDraw()
+    	   int scrollRange = this.computeVerticalScrollRange();
+    	   if (scrollRange < mHeight) {
+    		    TextView footerView = new TextView(this.getContext());
+    	        footerView.setText(" ");
+    	        footerView.setHeight(mHeight - scrollRange + mRefreshViewHeight + 1);
+    	        addFooterView(footerView);
+    	   }
+       }
+       
     }
 
     @Override
