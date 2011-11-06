@@ -57,6 +57,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private int mHeight = -1;
 
     private boolean mBounceHack;
+    private TextView mFooterView;
 
     public PullToRefreshListView(Context context) {
         super(context);
@@ -118,18 +119,55 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     
     @Override
     protected void onDraw(Canvas canvas) {
-       super.onDraw(canvas);
-       if (mHeight == -1) {  // do it only once
-    	   mHeight = getHeight(); // getHeight only returns useful data after first onDraw()
-    	   int scrollRange = this.computeVerticalScrollRange();
-    	   if (scrollRange < mHeight) {
-    		    TextView footerView = new TextView(this.getContext());
-    	        footerView.setText(" ");
-    	        footerView.setHeight(mHeight - scrollRange + mRefreshViewHeight + 1);
-    	        addFooterView(footerView);
-    	   }
+        super.onDraw(canvas);
+        if (mHeight == -1) {  // do it only once
+            mHeight = getHeight(); // getHeight only returns useful data after first onDraw()
+            int itemHeight = getTotalItemHeight();
+            if (itemHeight < mHeight) {
+                mFooterView = new TextView(this.getContext());
+                mFooterView.setText(" ");
+                mFooterView.setHeight(mHeight - itemHeight
+                        + mRefreshViewHeight - mRefreshOriginalTopPadding);
+                addFooterView(mFooterView, null, false);
+                setSelection(1);
+            }
        }
-       
+    }
+
+    /**
+     * Adapts the height of the footer view.
+     */
+    private void adaptFooterHeight() {
+        if (mFooterView != null) {
+            int itemHeight = getTotalItemHeight();
+            if (mHeight < (itemHeight - mFooterView.getHeight())) {
+                removeFooterView(mFooterView);
+                mFooterView = null;
+            } else {
+                int h = mHeight - (itemHeight - mFooterView.getHeight())
+                    + mRefreshViewHeight - mRefreshOriginalTopPadding;
+                mFooterView.setHeight(h);
+            }
+        }
+    }
+
+    /**
+     * Calculates the combined height of all items in the adapter.
+     * 
+     * Modified from http://iserveandroid.blogspot.com/2011/06/how-to-calculate-lsitviews-total.html
+     * 
+     * @return 
+     */
+    private int getTotalItemHeight() {
+        ListAdapter adapter = getAdapter();
+        int listviewElementsheight = 0;
+        for(int i =0; i < adapter.getCount(); i++) {
+            View mView  = adapter.getView(i, null, this);
+            mView.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+            listviewElementsheight+= mView.getMeasuredHeight();
+        }
+        return listviewElementsheight;
     }
 
     @Override
@@ -386,6 +424,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         Log.d(TAG, "onRefreshComplete");
 
         resetHeader();
+        adaptFooterHeight();
 
         // If refresh view is visible when loading completes, scroll down to
         // the next item.
