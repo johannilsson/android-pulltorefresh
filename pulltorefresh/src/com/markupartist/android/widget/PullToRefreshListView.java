@@ -24,7 +24,6 @@ import com.markupartist.android.widget.pulltorefresh.R;
 
 public class PullToRefreshListView extends ListView implements OnScrollListener {
 
-    private static final int TAP_TO_REFRESH = 1;
     private static final int PULL_TO_REFRESH = 2;
     private static final int RELEASE_TO_REFRESH = 3;
     private static final int REFRESHING = 4;
@@ -107,7 +106,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         mRefreshView.setOnClickListener(new OnClickRefreshListener());
         mRefreshOriginalTopPadding = mRefreshView.getPaddingTop();
 
-        mRefreshState = TAP_TO_REFRESH;
+        mRefreshState = PULL_TO_REFRESH;
 
         addHeaderView(mRefreshView);
 
@@ -292,21 +291,19 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
      * Resets the header to the original state.
      */
     private void resetHeader() {
-        if (mRefreshState != TAP_TO_REFRESH) {
-            mRefreshState = TAP_TO_REFRESH;
+        mRefreshState = PULL_TO_REFRESH;
 
-            resetHeaderPadding();
+        resetHeaderPadding();
 
-            // Set refresh view text to the pull label
-            mRefreshViewText.setText(R.string.pull_to_refresh_tap_label);
-            // Replace refresh drawable with arrow drawable
-            mRefreshViewImage.setImageResource(R.drawable.ic_pulltorefresh_arrow);
-            // Clear the full rotation animation
-            mRefreshViewImage.clearAnimation();
-            // Hide progress bar and arrow.
-            mRefreshViewImage.setVisibility(View.GONE);
-            mRefreshViewProgress.setVisibility(View.GONE);
-        }
+        // Set refresh view text to the pull label
+        mRefreshViewText.setText(R.string.pull_to_refresh_tap_label);
+        // Replace refresh drawable with arrow drawable
+        mRefreshViewImage.setImageResource(R.drawable.ic_pulltorefresh_arrow);
+        // Clear the full rotation animation
+        mRefreshViewImage.clearAnimation();
+        // Hide progress bar and arrow.
+        mRefreshViewImage.setVisibility(View.GONE);
+        mRefreshViewProgress.setVisibility(View.GONE);
     }
 
     private void measureView(View child) {
@@ -348,10 +345,10 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                 } else if (mRefreshView.getBottom() < mRefreshViewHeight + 20
                         && mRefreshState != PULL_TO_REFRESH) {
                     mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
-                    if (mRefreshState != TAP_TO_REFRESH) {
-                        mRefreshViewImage.clearAnimation();
-                        mRefreshViewImage.startAnimation(mReverseFlipAnimation);
-                    }
+                    //if (mRefreshState != TAP_TO_REFRESH) {
+                    mRefreshViewImage.clearAnimation();
+                    mRefreshViewImage.startAnimation(mReverseFlipAnimation);
+                    //}
                     mRefreshState = PULL_TO_REFRESH;
                 }
             } else {
