@@ -9,7 +9,6 @@
         <item>Marvin the Paranoid Android</item>
         <item>Robbie the Robot</item>        
         <item>C-3PO, R2-D2</item>
-        <!--
         <item>Maschinenmensch</item>
         <item>Fembots</item>
         <item>RoboCop</item>
@@ -32,6 +31,5 @@
         <item>Robot Devil</item>
         <item>Cain</item>
         <item>Cylons</item>
-         -->
     </string-array>
 </resources>
