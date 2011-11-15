@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+    
+<resources>
+    <!--
+    Robots, http://www.huffingtonpost.com/2010/04/10/famous-robots-from-film-p_n_532229.html#s80216&title=ED_209
+    -->
+    <string-array name="robots">
+        <item>ED 209</item>
+        <item>Marvin the Paranoid Android</item>
+        <item>Robbie the Robot</item>        
+        <item>C-3PO, R2-D2</item>
+        <!--
+        <item>Maschinenmensch</item>
+        <item>Fembots</item>
+        <item>RoboCop</item>
+        <item>T-800, T-1000</item>
+        <item>Optimus Prime, Megatron</item>
+        <item>Rosie The Maid</item>
+        <item>WALL-E, Eve</item>
+        <item>Number 5</item>
+        <item>Tom Servo, Crow T. Robot, Gypsy</item>
+        <item>Gort</item>
+        <item>Data, Seven Of Nine</item>
+        <item>Bender</item>
+        <item>Lost in Space robot</item>
+        <item>Bee Bee</item>
+        <item>Cybermen and Daleks- Doctor Who</item>
+        <item>Ash</item>
+        <item>Rick Deckard &amp; Rachael - Blade Runner</item>
+        <item>Marcus Wright - Terminator Salvation</item>
+        <item>Twiki</item>
+        <item>Robot Devil</item>
+        <item>Cain</item>
+        <item>Cylons</item>
+         -->
+    </string-array>
+</resources>

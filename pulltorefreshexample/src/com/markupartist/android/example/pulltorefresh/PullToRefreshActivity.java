@@ -6,13 +6,15 @@ import java.util.LinkedList;
 import android.app.ListActivity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.markupartist.android.widget.PullToRefreshListView;
 import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 
 public class PullToRefreshActivity extends ListActivity {    
-    private LinkedList<String> mListItems;
+    private ArrayAdapter<String> mAdapter;
 
     /** Called when the activity is first created. */
     @Override
@@ -21,7 +23,8 @@ public class PullToRefreshActivity extends ListActivity {
         setContentView(R.layout.pull_to_refresh);
 
         // Set a listener to be invoked when the list should be refreshed.
-        ((PullToRefreshListView) getListView()).setOnRefreshListener(new OnRefreshListener() {
+        PullToRefreshListView listView = (PullToRefreshListView) getListView();
+        listView.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh() {
                 // Do work to refresh the list here.
@@ -29,42 +32,40 @@ public class PullToRefreshActivity extends ListActivity {
             }
         });
 
-        mListItems = new LinkedList<String>();
-        mListItems.addAll(Arrays.asList(mStrings));
+        mAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1,
+                new LinkedList<String>(Arrays.asList(getResources().getStringArray(R.array.robots))));
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, mListItems);
-
-        setListAdapter(adapter);
+        setListAdapter(mAdapter);
     }
 
-    private class GetDataTask extends AsyncTask<Void, Void, String[]> {
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        ((ArrayAdapter<String>)getListAdapter()).remove(
+            (String)l.getItemAtPosition(position)
+        );
+    }
+
+    private class GetDataTask extends AsyncTask<Void, Void, Void> {
 
         @Override
-        protected String[] doInBackground(Void... params) {
+        protected Void doInBackground(Void... params) {
             // Simulates a background job.
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 ;
             }
-            return mStrings;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(String[] result) {
-            mListItems.addFirst("Added after refresh...");
-
+        protected void onPostExecute(Void vooid) {
+            mAdapter.insert("Robot says: " + Long.toHexString(System.nanoTime()), 0);
             // Call onRefreshComplete when the list has been refreshed.
             ((PullToRefreshListView) getListView()).onRefreshComplete();
-
-            super.onPostExecute(result);
         }
     }
 
-    private String[] mStrings = {
-            "Abbaye de Belloc", "Abbaye du Mont des Cats", "Abertam",
-            "Abondance", "Ackawi", "Acorn", "Adelost", "Affidelice au Chablis",
-            "Afuega'l Pitu", "Airag", "Airedale", "Aisy Cendre",
-            "Allgauer Emmentaler"};
 }
