@@ -28,13 +28,14 @@ public class PullToRefreshActivity extends ListActivity {
             @Override
             public void onRefresh() {
                 // Do work to refresh the list here.
-                new GetDataTask().execute();
+                new GetRobotTalkTask().execute();
             }
         });
 
         mAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1,
-                new LinkedList<String>(Arrays.asList(getResources().getStringArray(R.array.robots))));
+                new LinkedList<String>(Arrays.asList(
+                        getResources().getStringArray(R.array.robots))));
 
         setListAdapter(mAdapter);
     }
@@ -47,22 +48,22 @@ public class PullToRefreshActivity extends ListActivity {
         );
     }
 
-    private class GetDataTask extends AsyncTask<Void, Void, Void> {
+    private class GetRobotTalkTask extends AsyncTask<Void, Void, String> {
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected String doInBackground(Void... params) {
             // Simulates a background job.
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 ;
             }
-            return null;
+            return Long.toHexString(System.nanoTime());
         }
 
         @Override
-        protected void onPostExecute(Void vooid) {
-            mAdapter.insert("Robot says: " + Long.toHexString(System.nanoTime()), 0);
+        protected void onPostExecute(String robotTalk) {
+            mAdapter.insert("Robot says: " + robotTalk, 0);
             // Call onRefreshComplete when the list has been refreshed.
             ((PullToRefreshListView) getListView()).onRefreshComplete();
         }
