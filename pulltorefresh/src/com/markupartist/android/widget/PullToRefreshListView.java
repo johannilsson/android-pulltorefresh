@@ -113,8 +113,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         mRefreshViewLastUpdated =
             (TextView) mRefreshView.findViewById(R.id.pull_to_refresh_updated_at);
 
-        mFooterView = (TextView) inflater.inflate(
-                R.layout.pull_to_refresh_footer, this, false);
+        mFooterView = new TextView(context);
         mFooterView.setText(" ");
         mFooterView.setHeight(0);
         addFooterView(mFooterView, null, false);
