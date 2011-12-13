@@ -31,6 +31,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private int mRefreshState = PULL_TO_REFRESH;
 
     private OnRefreshListener mOnRefreshListener;
+    private OnEndOfListReachedListener mOnEndOfListListener;
 
     /**
      * Listener that will receive notifications every time the list scrolls.
@@ -52,6 +53,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private int mRefreshOriginalTopPadding;
     private int mLastMotionY;
     private int mHeight = -1;
+    private int mScrollPriorLast = -1;
 
     private boolean mBounceHack;
     private TextView mFooterView;
@@ -245,6 +247,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         setSelectionToFirst();
         // With different data we may need to adjust footer height
 		adaptFooterHeight();
+		mScrollPriorLast = -1;
     }
 
     /**
@@ -265,6 +268,15 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
      */
     public void setOnRefreshListener(OnRefreshListener onRefreshListener) {
         mOnRefreshListener = onRefreshListener;
+    }
+    
+    /**
+     * Register a callback to be invoked when the end of the list is reached.
+     * 
+     * @param onEndOfListListener The callback to run.
+     */
+    public void setOnEndOfListReachedListener(OnEndOfListReachedListener onEndOfListListener) {
+    	mOnEndOfListListener = onEndOfListListener;
     }
 
     /**
@@ -425,6 +437,22 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         } else if (mBounceHack && mCurrentScrollState == SCROLL_STATE_FLING) {
         	setSelectionToFirst();
         }
+        
+        if(mOnEndOfListListener != null)
+        {
+        	// what is the bottom item that is visible
+        	int lastInScreen = firstVisibleItem + visibleItemCount;
+
+        	// is the bottom item visible
+        	if (lastInScreen == totalItemCount) {
+        		// Only do callback 1x when we reach the bottom
+        		if (mScrollPriorLast != lastInScreen) {
+        			mScrollPriorLast = lastInScreen;
+        			// Do end of list reached callback
+        			mOnEndOfListListener.onEndOfListReached();
+        		}
+        	}
+        }
 
         if (mOnScrollListener != null) {
             mOnScrollListener.onScroll(view, firstVisibleItem,
@@ -514,5 +542,16 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
          * expected to indicate that the refresh has completed.
          */
         public void onRefresh();
+    }
+    
+    /**
+     * Interface definition for a callback to be invoked when end of list is reached.
+     */
+    public interface OnEndOfListReachedListener {
+        /**
+         * Called 1x when the end of list is reached. This might be used to implement an endless list which auto-loads more data as users scroll.
+         * It will only be called again if the adapter changes or the list grows/shrinks
+         */
+        public void onEndOfListReached();
     }
 }

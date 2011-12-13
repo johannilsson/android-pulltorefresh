@@ -9,8 +9,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.markupartist.android.widget.PullToRefreshListView;
+import com.markupartist.android.widget.PullToRefreshListView.OnEndOfListReachedListener;
 import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 
 public class PullToRefreshActivity extends ListActivity {    
@@ -28,6 +30,12 @@ public class PullToRefreshActivity extends ListActivity {
             public void onRefresh() {
                 // Do work to refresh the list here.
                 new GetRobotTalkTask().execute();
+            }
+        });
+        listView.setOnEndOfListReachedListener(new OnEndOfListReachedListener() {
+            public void onEndOfListReached() {
+                // Post a toast, could load more data here to extend the list
+                Toast.makeText(getApplicationContext(), "End of list reached", Toast.LENGTH_SHORT).show();
             }
         });
 
