@@ -149,46 +149,89 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             adaptFooterHeight();
         }
     }
-
+    
     /**
-     * Adapts the height of the footer view.
+     * Sets list view selection to first element in adapter unless refreshing where it will set it to the refresh view element
      */
-    private void adaptFooterHeight() {
-        int itemHeight = getTotalItemHeight();
-        int footerAndHeaderSize = mFooterView.getHeight()
-            + (mRefreshViewHeight - mRefreshOriginalTopPadding);
-        int actualItemsSize = itemHeight - footerAndHeaderSize;
-        if (mHeight < actualItemsSize) {
-            mFooterView.setHeight(0);
-        } else {
-            int h = mHeight - actualItemsSize;
-            mFooterView.setHeight(h);
-            setSelection(1);
-        }
-    }
+	private void setSelectionToFirst() {
+		if (getAdapter() != null && mRefreshState != REFRESHING) {
+			// This allows for the divider to push the selection down from the top so the fading edge doesn't obscure the first view
+			setSelectionFromTop(1, getDividerHeight());
+		} else {
+			// Refreshing or no adapter, display the refresh view
+			super.setSelection(0);
+		}
+	}
+	
+	@Override
+	public void setSelection(int position) {
+		// If the 0th or 1st element do special behavior
+		if (position <= 1) {
+			setSelectionToFirst();
+		} else {
+			// Force to index 0 while refreshing, allow other indices while not
+			super.setSelection((mRefreshState == REFRESHING) ? 0 : position);
+		}
+	}
 
-    /**
-     * Calculates the combined height of all items in the adapter.
-     * 
-     * Modified from http://iserveandroid.blogspot.com/2011/06/how-to-calculate-lsitviews-total.html
-     * 
-     * @return 
-     */
-    private int getTotalItemHeight() {
-        ListAdapter adapter = getAdapter();
-        int listviewElementsheight = 0;
-        for(int i =0; i < adapter.getCount(); i++) {
-            View mView  = adapter.getView(i, null, this);
-            mView.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
-                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-            listviewElementsheight+= mView.getMeasuredHeight();
-        }
-        return listviewElementsheight;
-    }
+	/**
+	 * Adapts the height of the footer view.
+	 */
+	private void adaptFooterHeight() {
+		if (mHeight == -1) {
+			return;
+		}
+		// We can fill up to the total height - header padding to get it off screen
+		int spaceToFill = mHeight - mRefreshOriginalTopPadding;
+		int itemHeight = getTotalItemHeight(spaceToFill);
+		spaceToFill -= itemHeight;
+
+		if (spaceToFill <= 0) {
+			mFooterView.setHeight(0);
+		} else {
+			mFooterView.setHeight(spaceToFill);
+			setSelectionToFirst();
+		}
+	}
+
+	/**
+	 * Calculates the combined height of all items in the adapter. Does not look at header and footer
+	 * 
+	 * Modified from
+	 * http://iserveandroid.blogspot.com/2011/06/how-to-calculate-lsitviews-total.html
+	 * 
+	 * @param spaceToFill
+	 *            the maximum item height we care about
+	 * @return total item height, capped to spaceToFill
+	 */
+	private int getTotalItemHeight(int spaceToFill) {
+		ListAdapter adapter = getAdapter();
+		// If no adapter there is no item height
+		if (adapter == null) {
+			return 0;
+		}
+		int listviewElementsheight = 0;
+		// Need to constrain width for lists with variable height items or items with wrapping text
+		int desiredWidth = MeasureSpec.makeMeasureSpec(getWidth(),
+				MeasureSpec.AT_MOST);
+		// Skip header and footer
+		for (int i = 1; i < adapter.getCount() - 1
+				&& listviewElementsheight < spaceToFill; i++) {
+			View mView = adapter.getView(i, null, this);
+			mView.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+			listviewElementsheight += mView.getMeasuredHeight();
+		}
+		// Add in dividers
+		listviewElementsheight += getDividerHeight() * (adapter.getCount() - 1);
+		if (listviewElementsheight > spaceToFill) {
+			listviewElementsheight = spaceToFill;
+		}
+		return listviewElementsheight;
+	}
 
     @Override
     protected void onAttachedToWindow() {
-        setSelection(1);
+    	setSelectionToFirst();
     }
 
     @Override
@@ -198,8 +241,10 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         }
 
         super.setAdapter(adapter);
-
-        setSelection(1);
+        // Ensure with new data the view is reinitialized to beginning
+        setSelectionToFirst();
+        // With different data we may need to adjust footer height
+		adaptFooterHeight();
     }
 
     /**
@@ -256,7 +301,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                             || mRefreshView.getTop() <= 0) {
                         // Abort refresh and scroll down below the refresh view
                         resetHeader();
-                        setSelection(1);
+                        setSelectionToFirst();
                     }
                 }
                 break;
@@ -346,7 +391,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         child.measure(childWidthSpec, childHeightSpec);
     }
 
-    @Override
     public void onScroll(AbsListView view, int firstVisibleItem,
             int visibleItemCount, int totalItemCount) {
         // When the refresh view is completely visible, change the text to say
@@ -376,10 +420,10 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         } else if (mCurrentScrollState == SCROLL_STATE_FLING
                 && firstVisibleItem == 0
                 && mRefreshState != REFRESHING) {
-            setSelection(1);
+        	setSelectionToFirst();
             mBounceHack = true;
         } else if (mBounceHack && mCurrentScrollState == SCROLL_STATE_FLING) {
-            setSelection(1);
+        	setSelectionToFirst();
         }
 
         if (mOnScrollListener != null) {
@@ -388,7 +432,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         }
     }
 
-    @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
         mCurrentScrollState = scrollState;
 
@@ -440,7 +483,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         // the next item.
         if (mRefreshView.getBottom() > 0) {
             invalidateViews();
-            setSelection(1);
+            setSelectionToFirst();
         }
     }
 
@@ -450,8 +493,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
      * list.
      */
     private class OnClickRefreshListener implements OnClickListener {
-
-        @Override
         public void onClick(View v) {
             if (mRefreshState != REFRESHING) {
                 prepareForRefresh();

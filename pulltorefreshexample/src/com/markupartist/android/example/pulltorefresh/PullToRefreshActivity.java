@@ -25,7 +25,6 @@ public class PullToRefreshActivity extends ListActivity {
         // Set a listener to be invoked when the list should be refreshed.
         PullToRefreshListView listView = (PullToRefreshListView) getListView();
         listView.setOnRefreshListener(new OnRefreshListener() {
-            @Override
             public void onRefresh() {
                 // Do work to refresh the list here.
                 new GetRobotTalkTask().execute();
