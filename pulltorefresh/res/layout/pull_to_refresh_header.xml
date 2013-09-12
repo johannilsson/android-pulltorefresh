@@ -40,7 +40,6 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dip"
         android:layout_marginRight="20dip"
-        android:visibility="gone"
         android:layout_gravity="center"
         android:gravity="center"
         android:src="@drawable/ic_pulltorefresh_arrow"

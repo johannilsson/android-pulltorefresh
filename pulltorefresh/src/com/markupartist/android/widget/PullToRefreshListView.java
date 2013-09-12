@@ -162,11 +162,11 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        final int y = (int) event.getY();
         mBounceHack = false;
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
+            	mLastMotionY=0;
                 if (!isVerticalScrollBarEnabled()) {
                     setVerticalScrollBarEnabled(true);
                 }
@@ -186,9 +186,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                     }
                 }
                 break;
-            case MotionEvent.ACTION_DOWN:
-                mLastMotionY = y;
-                break;
             case MotionEvent.ACTION_MOVE:
                 applyHeaderPadding(event);
                 break;
@@ -207,17 +204,19 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                 }
 
                 int historicalY = (int) ev.getHistoricalY(p);
+                if(mLastMotionY==0){
+                	mLastMotionY = historicalY;
+                }
 
                 // Calculate the padding to apply, we divide by 1.7 to
                 // simulate a more resistant effect during pull.
-                int topPadding = (int) (((historicalY - mLastMotionY)
-                        - mRefreshViewHeight) / 1.7);
-
+                int topPadding = mRefreshView.getPaddingTop() + (int)((historicalY - mLastMotionY)/1.7);
                 mRefreshView.setPadding(
                         mRefreshView.getPaddingLeft(),
                         topPadding,
                         mRefreshView.getPaddingRight(),
                         mRefreshView.getPaddingBottom());
+            	mLastMotionY = historicalY;
             }
         }
     }
@@ -249,7 +248,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             // Clear the full rotation animation
             mRefreshViewImage.clearAnimation();
             // Hide progress bar and arrow.
-            mRefreshViewImage.setVisibility(View.GONE);
             mRefreshViewProgress.setVisibility(View.GONE);
         }
     }
@@ -282,16 +280,12 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         if (mCurrentScrollState == SCROLL_STATE_TOUCH_SCROLL
                 && mRefreshState != REFRESHING) {
             if (firstVisibleItem == 0) {
-                mRefreshViewImage.setVisibility(View.VISIBLE);
-                if ((mRefreshView.getBottom() >= mRefreshViewHeight + 20
-                        || mRefreshView.getTop() >= 0)
-                        && mRefreshState != RELEASE_TO_REFRESH) {
+                if (mRefreshState == PULL_TO_REFRESH && mRefreshView.getBottom() >= mRefreshViewHeight) {
                     mRefreshViewText.setText(R.string.pull_to_refresh_release_label);
                     mRefreshViewImage.clearAnimation();
                     mRefreshViewImage.startAnimation(mFlipAnimation);
                     mRefreshState = RELEASE_TO_REFRESH;
-                } else if (mRefreshView.getBottom() < mRefreshViewHeight + 20
-                        && mRefreshState != PULL_TO_REFRESH) {
+                } else if ((mRefreshState == TAP_TO_REFRESH)||(mRefreshState == RELEASE_TO_REFRESH && mRefreshView.getBottom() <= mRefreshViewHeight)) {
                     mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
                     if (mRefreshState != TAP_TO_REFRESH) {
                         mRefreshViewImage.clearAnimation();
@@ -300,7 +294,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                     mRefreshState = PULL_TO_REFRESH;
                 }
             } else {
-                mRefreshViewImage.setVisibility(View.GONE);
                 resetHeader();
             }
         } else if (mCurrentScrollState == SCROLL_STATE_FLING
@@ -334,13 +327,13 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     public void prepareForRefresh() {
         resetHeaderPadding();
 
-        mRefreshViewImage.setVisibility(View.GONE);
         // We need this hack, otherwise it will keep the previous drawable.
         mRefreshViewImage.setImageDrawable(null);
         mRefreshViewProgress.setVisibility(View.VISIBLE);
 
         // Set refresh view text to the refreshing label
         mRefreshViewText.setText(R.string.pull_to_refresh_refreshing_label);
+        mRefreshViewLastUpdated.setVisibility(View.GONE);
 
         mRefreshState = REFRESHING;
     }
