@@ -123,7 +123,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     @Override
     public void setAdapter(ListAdapter adapter) {
         super.setAdapter(adapter);
-
         setSelection(1);
     }
 
@@ -372,7 +371,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
         // If refresh view is visible when loading completes, scroll down to
         // the next item.
-        if (mRefreshView.getBottom() > 0) {
+        if (getFirstVisiblePosition() == 0) {
             invalidateViews();
             setSelection(1);
         }
