@@ -343,7 +343,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     }
 
     public void setArrowDrawable(Drawable arrow) {
-	    mArrowDrawable = arrow;
+        mArrowDrawable = arrow;
         mRefreshViewImage.setImageDrawable(arrow);
     }
 
