@@ -54,6 +54,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private int mRefreshOriginalTopPadding;
     private int mLastMotionY;
 
+    private int mArrowResource = R.drawable.ic_pulltorefresh_arrow;
+
     private boolean mBounceHack;
 
     public PullToRefreshListView(Context context) {
@@ -244,7 +246,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             // Set refresh view text to the pull label
             mRefreshViewText.setText(R.string.pull_to_refresh_tap_label);
             // Replace refresh drawable with arrow drawable
-            mRefreshViewImage.setImageResource(R.drawable.ic_pulltorefresh_arrow);
+            mRefreshViewImage.setImageResource(mArrowResource);
             // Clear the full rotation animation
             mRefreshViewImage.clearAnimation();
             // Hide progress bar and arrow.
@@ -328,6 +330,15 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         if (mOnScrollListener != null) {
             mOnScrollListener.onScrollStateChanged(view, scrollState);
         }
+    }
+
+    public void setLightArrow(boolean light) {
+    	if(light) {
+    		mArrowResource = R.drawable.ic_pulltorefresh_arrow_light;
+    	} else {
+    		mArrowResource = R.drawable.ic_pulltorefresh_arrow;
+    	}
+    	mRefreshViewImage.setImageResource(mArrowResource);
     }
 
     public void prepareForRefresh() {
