@@ -13,6 +13,7 @@ import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 
 public class PullToRefreshActivity extends ListActivity {    
     private LinkedList<String> mListItems;
+    private boolean isFirst = true;
 
     /** Called when the activity is first created. */
     @Override
@@ -37,6 +38,14 @@ public class PullToRefreshActivity extends ListActivity {
 
         setListAdapter(adapter);
     }
+    
+    @Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		((PullToRefreshListView) getListView()).refreshJugaad();
+		isFirst = true;
+	}
 
     private class GetDataTask extends AsyncTask<Void, Void, String[]> {
 
@@ -57,6 +66,11 @@ public class PullToRefreshActivity extends ListActivity {
 
             // Call onRefreshComplete when the list has been refreshed.
             ((PullToRefreshListView) getListView()).onRefreshComplete();
+            
+            if (isFirst) {
+				((PullToRefreshListView) getListView()).resetJugaad();
+				isFirst = false;
+			}
 
             super.onPostExecute(result);
         }

@@ -376,6 +376,22 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             setSelection(1);
         }
     }
+    /**
+     * this method must be used to simulate auto refresh
+     */
+    public void refreshJugaad() {
+		prepareForRefresh();
+		onRefresh();
+		addHeaderView(mRefreshView);
+	}
+
+    /**
+     * this method must be used to remove refresh view after loading is done
+     */
+	public void resetJugaad() {
+		removeHeaderView(mRefreshView);
+		addHeaderView(mRefreshView);
+	}
 
     /**
      * Invoked when the refresh view is clicked on. This is mainly used when
