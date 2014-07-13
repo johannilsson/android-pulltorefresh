@@ -2,6 +2,8 @@
 
 **Note** This library is deprecated, use either [v7 appcompat library](http://developer.android.com/tools/support-library/features.html#v7) or [ActionBarSherlock](http://actionbarsherlock.com/).
 
+---
+
 This project aims to provide a reusable pull to refresh widget for Android.
 
 ![Screenshot](https://github.com/johannilsson/android-pulltorefresh/raw/master/android-pull-to-refresh.png)
