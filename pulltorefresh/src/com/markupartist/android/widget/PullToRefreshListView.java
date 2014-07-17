@@ -2,6 +2,9 @@ package com.markupartist.android.widget;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -54,6 +57,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private int mRefreshOriginalTopPadding;
     private int mLastMotionY;
 
+    private Drawable mArrowDrawable = null;
+
     private boolean mBounceHack;
 
     public PullToRefreshListView(Context context) {
@@ -101,6 +106,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             (TextView) mRefreshView.findViewById(R.id.pull_to_refresh_updated_at);
 
         mRefreshViewImage.setMinimumHeight(50);
+        mArrowDrawable = mRefreshViewImage.getDrawable();
+        
         mRefreshView.setOnClickListener(new OnClickRefreshListener());
         mRefreshOriginalTopPadding = mRefreshView.getPaddingTop();
 
@@ -244,7 +251,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             // Set refresh view text to the pull label
             mRefreshViewText.setText(R.string.pull_to_refresh_tap_label);
             // Replace refresh drawable with arrow drawable
-            mRefreshViewImage.setImageResource(R.drawable.ic_pulltorefresh_arrow);
+            mRefreshViewImage.setImageDrawable(mArrowDrawable);
             // Clear the full rotation animation
             mRefreshViewImage.clearAnimation();
             // Hide progress bar and arrow.
@@ -328,6 +335,19 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         if (mOnScrollListener != null) {
             mOnScrollListener.onScrollStateChanged(view, scrollState);
         }
+    }
+
+    public void setArrowResource(int resId) {
+        setArrowDrawable(getResources().getDrawable(resId));
+    }
+
+    public void setArrowBitmap(Bitmap arrow) {
+        setArrowDrawable(new BitmapDrawable(arrow));
+    }
+
+    public void setArrowDrawable(Drawable arrow) {
+        mArrowDrawable = arrow;
+        mRefreshViewImage.setImageDrawable(arrow);
     }
 
     public void prepareForRefresh() {
