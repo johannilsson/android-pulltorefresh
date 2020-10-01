@@ -1,4 +1,4 @@
-# Pull To Refresh for Android
+# Pull To Refresh for Android (Swipe)
 
 **Note** This library is deprecated, a swipe refresh layout is available in the [v4 support library](https://developer.android.com/reference/android/support/v4/widget/SwipeRefreshLayout.html).
 
